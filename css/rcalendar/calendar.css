@@ -1,171 +1,200 @@
 .nav-left {
-    text-align: left;
+	text-align: left;
 }
 
 .nav-right {
-    text-align: right;
+	text-align: right;
 }
 
 .scrollable {
-    width: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
+	width: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 
 .table-fixed {
-    table-layout: fixed;
+	table-layout: fixed;
 }
 
 .no-event-label {
-    font-weight: bold;
-    color: darkgrey;
-    text-align: center;
+	font-weight: bold;
+	color: darkgrey;
+	text-align: center;
 }
 
 .event-detail-container {
-    border-top: 2px darkgrey solid;
+	border-top: 2px darkgrey solid;
 }
 
 .event-detail {
-    cursor: pointer;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+	cursor: pointer;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 .calendar-header {
-    text-align: center;
-    padding-top: 5px;
-    font-weight: bold;
+	text-align: center;
+	padding-top: 5px;
+	font-weight: bold;
 }
 
 .calendar-hour-column, .calendar-week-column {
-    width: 50px;
+	width: 50px;
 }
 
 .calendar-navbar {
-    margin-bottom: 5px;
+	margin-bottom: 5px;
 }
 
 .calendar-event-wrap {
-    position: relative;
-    height: 100%;
+	position: relative;
+	height: 100%;
 }
 
 .calendar-event {
-    position: absolute;
-    padding: 2px;
-    cursor: pointer;
+	position: absolute;
+	padding: 2px;
+	cursor: pointer;
 }
 
 .calendar-event-inner {
-    overflow: hidden;
-    background-color: #3a87ad;
-    color: white;
-    height: 100%;
-    width: 100%;
-    padding: 2px;
-    line-height: 15px;
+	overflow: hidden;
+	background-color: #3a87ad;
+	color: white;
+	height: 100%;
+	width: 100%;
+	padding: 2px;
+	line-height: 15px;
 }
 
 .calendar-cell {
-    padding: 0 !important;
-    height: 37px;
+	padding: 0 !important;
+	height: 37px;
 }
 
 .monthview-primary-with-event {
-    background-color: #3a87ad;
-    color: white;
+	background-color: #3a87ad;
+	color: white;
 }
 
 .monthview-selected {
-    background-color: #009900;
-    color: white;
+	background-color: #090;
+	color: white;
 }
 
 .monthview-current {
-    background-color: lightgrey;
+	background-color: lightgrey;
 }
 
 .monthview-eventdetail-timecolumn {
-    width: 110px;
-    overflow: hidden;
+	width: 110px;
+	overflow: hidden;
 }
 
 .monthview-dateCell {
-    cursor: pointer;
+	cursor: pointer;
+}
+
+md-grid-list md-grid-tile .date {
+	position: absolute;
+	top: 0;
+	right: 0;
+	/* outline: red solid 1px; */
+	font-size: 11px !important;
+	line-height: initial !important;
+	padding: 3px !important;
 }
 
 .monthview-secondary-with-event {
-    background-color: #d9edf7;
+	background-color: #d9edf7;
 }
 
 .weekview-allday-label, .dayview-allday-label {
-    float: left;
-    height: 100%;
-    line-height: 50px;
-    text-align: center;
-    width: 50px;
-    border: 1px solid #ddd;
-    border-right-width: 0;
+	float: left;
+	height: 100%;
+	line-height: 50px;
+	text-align: center;
+	width: 50px;
+	border: 1px solid #ddd;
+	border-right-width: 0;
 }
 
 .weekview-allday-content-wrapper, .dayview-allday-content-wrapper {
-    margin-left: 50px;
-    overflow-x: hidden;
-    overflow-y: auto;
-    height: 100%;
+	margin-left: 50px;
+	overflow-x: hidden;
+	overflow-y: auto;
+	height: 100%;
 }
 
 .weekview-header, .monthview-datetable {
-    margin-bottom: 0;
+	margin-bottom: 0;
 }
 
 .weekview-header th {
-    overflow: hidden;
-    white-space: nowrap;
+	overflow: hidden;
+	white-space: nowrap;
 }
 
 .weekview-allday-table, .dayview-allday-table {
-    height: 52px;
+	height: 52px;
 }
 
 .weekview-allday-content-table, .dayview-allday-content-table {
-    min-height: 100%;
-    margin-bottom: 0;
+	min-height: 100%;
+	margin-bottom: 0;
 }
 
 .gutter-column {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
 }
 
 @media (max-width: 750px) {
-    .weekview-allday-label, .dayview-allday-label, .calendar-hour-column, .calendar-week-column {
-        width: 32px;
-    }
+	.weekview-allday-label, .dayview-allday-label, .calendar-hour-column, .calendar-week-column {
+		width: 32px;
+	}
 
-    .weekview-allday-label, .dayview-allday-label {
-        padding-top: 4px;
-    }
+	.weekview-allday-label, .dayview-allday-label {
+		padding-top: 4px;
+	}
 
-    .table > tbody > tr > td.calendar-hour-column, .table > thead > tr > th.weekview-header-label {
-        padding-left: 0;
-        padding-right: 0;
-        font-size: 12px;
-        line-height: 12px;
-        vertical-align: middle;
-    }
+	.table > tbody > tr > td.calendar-hour-column, .table > thead > tr > th.weekview-header-label {
+		padding-left: 0;
+		padding-right: 0;
+		font-size: 12px;
+		line-height: 12px;
+		vertical-align: middle;
+	}
 
-    .weekview-allday-label, .dayview-allday-label {
-        line-height: inherit;
-    }
+	.weekview-allday-label, .dayview-allday-label {
+		line-height: inherit;
+	}
 
-    .weekview-allday-content-wrapper, .dayview-allday-content-wrapper {
-        margin-left: 32px;
-    }
+	.weekview-allday-content-wrapper, .dayview-allday-content-wrapper {
+		margin-left: 32px;
+	}
 
-    .calendar-event-inner {
-        font-size: 12px;
-    }
+	.calendar-event-inner {
+		font-size: 12px;
+	}
 }
 
+.md-button.md-small {
+	font-size: 11px;
+	min-height: 27px;
+	line-height: 27px;
+	min-width: 1%;
+	margin: 3px 0 4px 0;
+}
+
+.md-toolbar-tools h2 {
+	overflow-x: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.md-toolbar-tools .moveNext {
+	-ms-transform: translate3d(0%, 0%, 0) rotate(180deg);
+	-webkit-transform: translate3d(0%, 0%, 0) rotate(180deg);
+	transform: translate3d(0%, 0%, 0) rotate(180deg);
+}
