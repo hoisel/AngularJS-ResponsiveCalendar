@@ -1,4 +1,4 @@
-<div ng-switch="calendarMode" layout="column">
+<div ng-switch="calendarMode" layout="column" ng-cloak>
 	<md-toolbar>
 		<div class='md-toolbar-tools' layout='row'>
 			<md-button class="md-icon-button" ng-click="move(-1)" aria-label="Mês anterior">
@@ -13,7 +13,7 @@
 			</md-button>
 		</div>
 	</md-toolbar>
-	<md-content layout-fill md-swipe-left='move(-1)' md-swipe-right='move(1)'>
+	<md-content layout-fill md-swipe-left='move(1)' md-swipe-right='move(-1)'>
 		<dayview ng-switch-when="day"></dayview>
 		<monthview ng-switch-when="month"></monthview>
 		<weekview ng-switch-when="week"></weekview>

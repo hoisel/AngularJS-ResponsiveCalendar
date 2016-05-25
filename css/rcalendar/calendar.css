@@ -73,23 +73,29 @@
 }
 
 .monthview-primary-with-event {
-	background-color: #3a87ad;
-	color: white;
+	/*background-color: #3a87ad;*/
+	/*color: rgb(57,73,171);*/
 }
 
 .monthview-selected {
-	background-color: #090;
+	/*	background-color: #090;*/
+	background-color: rgb(57, 73, 171);
 	color: white;
+	font-weight: bold !important;
+}
+
+.monthview-primary-with-event .date {
+	font-weight: bold !important;
 }
 
 .monthview-current {
 	background-color: lightgrey;
 }
 
-.monthview-eventdetail-timecolumn {
+/*.monthview-eventdetail-timecolumn {
 	width: 110px;
 	overflow: hidden;
-}
+}*/
 
 .monthview-dateCell {
 	cursor: pointer;
@@ -197,4 +203,71 @@ md-grid-list md-grid-tile .date {
 	-ms-transform: translate3d(0%, 0%, 0) rotate(180deg);
 	-webkit-transform: translate3d(0%, 0%, 0) rotate(180deg);
 	transform: translate3d(0%, 0%, 0) rotate(180deg);
+}
+
+.left {
+	float: left;
+}
+
+.month-events {
+	position: absolute;
+	margin: 0;
+	left: 0;
+	bottom: 0;
+	padding: 5px;
+}
+
+.month-event {
+	border-radius: 50%;
+	width: 4px;
+	height: 4px;
+	background-color: rgb(57, 73, 171);
+	margin: 0 2px 1px 0;
+}
+
+.md .month-event {
+	width: 5px;
+	height: 5px;
+}
+
+.month-events.lg {
+	padding: 10px;
+}
+
+.lg .month-event {
+	width: 7px;
+	height: 7px;
+}
+
+.monthview-selected .month-event {
+	background-color: #fff;
+}
+
+.monthview-secondary {
+	background-color: rgba(226, 229, 245, 0.74);
+}
+
+#events-detail {
+	margin: 0;
+	padding: 0;
+	font-size: 14px;
+}
+
+#events-detail.md {
+	margin-left: 30px;
+}
+
+
+#events-detail .event-time-column{
+	text-align: center;
+	font-weight: bold;
+}
+
+#events-detail .event-detail-column {
+	padding: 7px 0 7px 7px;
+	border-left: 1px solid rgba(0, 0, 0, .05);
+}
+
+#events-detail .event-detail-column .event-detail-title {
+	color:  rgb(57, 73, 171);
 }

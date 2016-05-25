@@ -15,7 +15,7 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
         eventSource: null,
         queryMode: 'local'
     })
-    .controller('ui.rCalendar.CalendarController', ['$scope', '$attrs', '$parse', '$interpolate', '$log', 'dateFilter', 'calendarConfig', function ($scope, $attrs, $parse, $interpolate, $log, dateFilter, calendarConfig) {
+    .controller('ui.rCalendar.CalendarController', ['$scope', '$attrs', '$parse', '$interpolate', '$log', '$mdMedia', 'dateFilter', 'calendarConfig', function ($scope, $attrs, $parse, $interpolate, $log, $mdMedia, dateFilter, calendarConfig) {
         'use strict';
         var self = this,
             ngModelCtrl = {$setViewValue: angular.noop}; // nullModelCtrl;
@@ -25,6 +25,8 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
             'showWeeks', 'showEventDetail', 'startingDay', 'eventSource', 'queryMode'], function (key, index) {
             self[key] = angular.isDefined($attrs[key]) ? (index < 7 ? $interpolate($attrs[key])($scope.$parent) : $scope.$parent.$eval($attrs[key])) : calendarConfig[key];
         });
+
+        $scope.$mdMedia = $mdMedia;
 
         $scope.$parent.$watch($attrs.eventSource, function (value) {
             self.onEventSourceChanged(value);
@@ -1011,7 +1013,7 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
     }]);
 angular.module("template/rcalendar/calendar.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/rcalendar/calendar.html",
-    "<div ng-switch=\"calendarMode\" layout=\"column\">\n" +
+    "<div ng-switch=\"calendarMode\" layout=\"column\" ng-cloak>\n" +
     "	<md-toolbar>\n" +
     "		<div class='md-toolbar-tools' layout='row'>\n" +
     "			<md-button class=\"md-icon-button\" ng-click=\"move(-1)\" aria-label=\"Mês anterior\">\n" +
@@ -1026,7 +1028,7 @@ angular.module("template/rcalendar/calendar.html", []).run(["$templateCache", fu
     "			</md-button>\n" +
     "		</div>\n" +
     "	</md-toolbar>\n" +
-    "	<md-content layout-fill md-swipe-left='move(-1)' md-swipe-right='move(1)'>\n" +
+    "	<md-content layout-fill md-swipe-left='move(1)' md-swipe-right='move(-1)'>\n" +
     "		<dayview ng-switch-when=\"day\"></dayview>\n" +
     "		<monthview ng-switch-when=\"month\"></monthview>\n" +
     "		<weekview ng-switch-when=\"week\"></weekview>\n" +
@@ -1086,24 +1088,40 @@ angular.module("template/rcalendar/day.html", []).run(["$templateCache", functio
 
 angular.module("template/rcalendar/month.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/rcalendar/month.html",
-    "<div class=\"md-padding\">\n" +
+    "<div class=\"md-padding month-view\">\n" +
+    "	<!--\n" +
+    "		<div style=\"position:  fixed;\">\n" +
+    "			<div ng-show=\"$mdMedia('gt-xs')\">\n" +
+    "				SMALL\n" +
+    "			</div>\n" +
     "\n" +
-    "	<div layout=\"column\" layout-gt-md=\"row\">\n" +
-    "		<div flex flex-gt-md=\"70\" flex-gt-lg=\"80\">\n" +
+    "			<div ng-show=\"$mdMedia('gt-sm')\">\n" +
+    "				MEDIUM\n" +
+    "			</div>\n" +
+    "\n" +
+    "			<div ng-show=\"$mdMedia('gt-md')\">\n" +
+    "				LARGE\n" +
+    "			</div>\n" +
+    "\n" +
+    "			<div ng-show=\"$mdMedia('xl')\">\n" +
+    "				X-LARGE\n" +
+    "			</div>\n" +
+    "		</div>-->\n" +
+    "	<div layout=\"column\" layout-gt-sm=\"row\">\n" +
+    "		<div flex flex-gt-sm=\"60\" flex-gt-lg=\"80\">\n" +
     "			<md-grid-list md-cols=\"7\"\n" +
-    "						  md-row-height=\"5:3\"\n" +
-    "						  md-row-height-gt-md=\"2:1\"\n" +
+    "						  md-row-height=\"3:1\"\n" +
     "						  md-gutter=\"0px\">\n" +
     "				<md-grid-tile md-rowspan=\"1\"\n" +
     "							  md-colspan=\"1\"\n" +
     "							  ng-repeat=\"label in labels track by $index\">\n" +
-    "					<small>{{label}}</small>\n" +
+    "					<small style=\"font-weight: bold;\">{{label}}</small>\n" +
     "				</md-grid-tile>\n" +
     "			</md-grid-list>\n" +
     "\n" +
     "			<md-grid-list md-cols=\"7\"\n" +
-    "						  md-row-height=\"5:3\"\n" +
-    "						  md-row-height-gt-md=\"2:1\"\n" +
+    "						  md-row-height=\"1:1\"\n" +
+    "						  md-row-height-gt-xs=\"3:2\"\n" +
     "						  md-gutter=\"0px\">\n" +
     "				<md-grid-tile md-rowspan=\"1\"\n" +
     "							  md-colspan=\"1\"\n" +
@@ -1111,8 +1129,7 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "					  						  .concat(rows[2])\n" +
     "					  						  .concat(rows[3])\n" +
     "					  						  .concat(rows[4])\n" +
-    "					  						  .concat(rows[5])\n" +
-    "					  						  .concat(rows[6]) track by dt.date\"\n" +
+    "					  						  .concat(rows[5]) track by dt.date\"\n" +
     "							  ng-click=\"select(dt.date)\"\n" +
     "							  class=\"monthview-dateCell\"\n" +
     "							  ng-focus=\"focus = true;\"\n" +
@@ -1123,39 +1140,90 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "					  			'md-whiteframe-12dp': hover || focus,\n" +
     "								'monthview-current': dt.current&&!dt.selected&&!dt.hasEvent,\n" +
     "								'monthview-secondary-with-event': dt.secondary&&dt.hasEvent,\n" +
-    "								'monthview-primary-with-event':!dt.secondary&&dt.hasEvent&&!dt.selected,\n" +
+    "								'monthview-secondary': dt.secondary,\n" +
+    "\n" +
     "								'monthview-selected': dt.selected,\n" +
-    "								'lastDayOfWeek': $index === 6\n" +
+    "								'lastDayOfWeek': (($index + 1) % 7) === 0\n" +
     "								}\">\n" +
     "					<div ng-class=\"{'text-muted':dt.secondary}\">\n" +
-    "				<span class=\"date\">\n" +
-    "					{{dt.label}}\n" +
-    "				</span>\n" +
+    "						<span class=\"date\">\n" +
+    "							{{dt.label}}\n" +
+    "						</span>\n" +
+    "						<div class=\"month-events\" ng-class=\"{ sm: $mdMedia('gt-xs'),  md: $mdMedia('gt-sm'), lg: $mdMedia('gt-md')}\">\n" +
+    "							<div class=\"month-event left\" ng-repeat=\"ev in dt.events track by ev.title\">\n" +
+    "								<md-tooltip>\n" +
+    "									{{ev.title}}\n" +
+    "								</md-tooltip>\n" +
+    "							</div>\n" +
+    "						</div>\n" +
     "					</div>\n" +
     "				</md-grid-tile>\n" +
     "			</md-grid-list>\n" +
     "		</div>\n" +
-    "		<div ng-if=\"showEventDetail\"\n" +
-    "			 class=\"event-detail-container\"\n" +
-    "			 flex\n" +
-    "			 flex-gt-md=\"30\"\n" +
-    "			 flex-gt-lg=\"20\">\n" +
-    "			<div class=\"scrollable\" style=\"height: 200px\">\n" +
-    "				<table>\n" +
-    "					<tr ng-repeat=\"event in selectedDate.events\" ng-if=\"selectedDate.events\">\n" +
-    "						<td ng-if=\"!event.allDay\" class=\"monthview-eventdetail-timecolumn\">{{event.startTime|date: 'HH:mm'}}\n" +
-    "							-\n" +
-    "							{{event.endTime|date: 'HH:mm'}}\n" +
-    "						</td>\n" +
-    "						<td ng-if=\"event.allDay\" class=\"monthview-eventdetail-timecolumn\">All day</td>\n" +
-    "						<td class=\"event-detail\" ng-click=\"eventSelected({event:event})\">{{event.title}}</td>\n" +
-    "					</tr>\n" +
-    "					<tr ng-if=\"!selectedDate.events\">\n" +
-    "						<td class=\"no-event-label\">No Events</td>\n" +
-    "					</tr>\n" +
-    "				</table>\n" +
-    "			</div>\n" +
-    "		</div>\n" +
+    "\n" +
+    "		<md-list id=\"events-detail\"\n" +
+    "				 ng-if=\"showEventDetail\"\n" +
+    "				 ng-class=\"{ md: $mdMedia('gt-sm')}\"\n" +
+    "				 flex\n" +
+    "				 flex-gt-sm=\"40\"\n" +
+    "				 flex-gt-lg=\"20\">\n" +
+    "\n" +
+    "			<md-subheader ng-if=\"$mdMedia('gt-sm')\">Eventos do dia: {{selectedDate.date|date: 'dd/MM/yyyy'}}</md-subheader>\n" +
+    "			<md-list-item ng-repeat=\"event in selectedDate.events\" ng-if=\"selectedDate.events\" layout=\"row\">\n" +
+    "\n" +
+    "				<!--<div flex=\"5\" flex-gt-md=\"5\" layout=\"row\" layout-align=\"center center\">\n" +
+    "					<div ng-class=\"{ sm: $mdMedia('gt-xs'),  md: $mdMedia('gt-sm'), lg: $mdMedia('gt-md')}\">\n" +
+    "						<div class=\"month-event\">\n" +
+    "						</div>\n" +
+    "					</div>\n" +
+    "				</div>-->\n" +
+    "				<div flex=\"30\"\n" +
+    "					 flex-gt-md=\"20\"\n" +
+    "					 flex-xl=\"25\"\n" +
+    "					 class=\"event-time-column\">\n" +
+    "					<small ng-if=\"!event.allDay\">\n" +
+    "						{{event.startTime|date: 'HH:mm'}} - {{event.endTime|date: 'HH:mm'}}\n" +
+    "					</small>\n" +
+    "					<small ng-if=\"event.allDay\">O dia todo</small>\n" +
+    "				</div>\n" +
+    "				<div flex=\"70\"\n" +
+    "					 flex-gt-md=\"80\"\n" +
+    "					 flex-xl=\"85\"\n" +
+    "					 class=\"event-detail-column\">\n" +
+    "					<span class=\"event-detail-title\" ng-click=\"eventSelected({event:event})\"> {{event.title}}</span><br>\n" +
+    "					<small class=\"event-detail-body\" ng-if=\"event.description\"> {{event.description}}</small>\n" +
+    "					<md-divider ng-if=\"!$last\"></md-divider>\n" +
+    "				</div>\n" +
+    "\n" +
+    "			</md-list-item>\n" +
+    "\n" +
+    "			<md-list-item ng-if=\"!selectedDate.events\">\n" +
+    "				<span>Sem Eventos</span>\n" +
+    "			</md-list-item>\n" +
+    "		</md-list>\n" +
+    "\n" +
+    "		<!--\n" +
+    "				<div ng-if=\"showEventDetail\"\n" +
+    "					 class=\"event-detail-container\"\n" +
+    "					 flex\n" +
+    "					 flex-gt-md=\"30\"\n" +
+    "					 flex-gt-lg=\"20\">\n" +
+    "					<div class=\"scrollable\" style=\"height: 200px\">\n" +
+    "						<table>\n" +
+    "							<tr ng-repeat=\"event in selectedDate.events\" ng-if=\"selectedDate.events\">\n" +
+    "								<td ng-if=\"!event.allDay\" class=\"monthview-eventdetail-timecolumn\">{{event.startTime|date: 'HH:mm'}}\n" +
+    "									-\n" +
+    "									{{event.endTime|date: 'HH:mm'}}\n" +
+    "								</td>\n" +
+    "								<td ng-if=\"event.allDay\" class=\"monthview-eventdetail-timecolumn\">All day</td>\n" +
+    "								<td class=\"event-detail\" ng-click=\"eventSelected({event:event})\">{{event.title}}</td>\n" +
+    "							</tr>\n" +
+    "							<tr ng-if=\"!selectedDate.events\">\n" +
+    "								<td class=\"no-event-label\">No Events</td>\n" +
+    "							</tr>\n" +
+    "						</table>\n" +
+    "					</div>\n" +
+    "				</div>-->\n" +
     "	</div>\n" +
     "</div>");
 }]);
