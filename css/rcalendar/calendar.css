@@ -73,8 +73,14 @@
 	padding: 10px 0 10px 10px;
 	line-height: 25px;
 	border-radius: 3px;
-	margin-bottom: 2px;
+	margin-bottom: 5px;
 }
+
+.calendar-event-inner .md-title{
+	font-size:18px;
+}
+
+
 
 .calendar-cell {
 	padding: 0 !important;

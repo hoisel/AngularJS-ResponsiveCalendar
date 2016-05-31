@@ -438,7 +438,6 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
                     step: {days: 1}
                 };
 
-
                 function createDateObject(date, format) {
                     return {
                         date: date,
@@ -495,7 +494,7 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
                     var startingDate = ctrl.range.startTime;
 
                     scope.day = createDateObject(startingDate, ctrl.formatDayHeader);
-                    scope.$parent.title = dateFilter(startingDate, ctrl.formatDayTitle);
+                    scope.$parent.title = dateFilter(startingDate, ctrl.formatDayTitle); //todo: remover?
                 };
 
                 ctrl._getRange = function getRange(currentDate) {
@@ -683,7 +682,7 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "					 flex-xl=\"85\"\n" +
     "					 class=\"event-detail-column\">\n" +
     "					<span class=\"event-detail-title\" ng-click=\"eventSelected({event:event})\"> {{event.title}}</span><br>\n" +
-    "					<small class=\"event-detail-body\" ng-if=\"event.description\"> {{event.description}}</small>\n" +
+    "					<!--<small class=\"event-detail-body\" ng-if=\"event.description\"> {{event.description}}</small>-->\n" +
     "					<md-divider ng-if=\"!$last\"></md-divider>\n" +
     "				</div>\n" +
     "\n" +
