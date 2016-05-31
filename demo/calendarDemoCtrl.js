@@ -3,6 +3,8 @@ angular.module( 'calendarDemoApp', [ 'ui.rCalendar', 'ngMaterial' ] );
 angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
     '$scope', function( $scope ) {
         'use strict';
+        $scope.mode = 'day';
+
         $scope.changeMode = function( mode ) {
             $scope.mode = mode;
         };
@@ -36,7 +38,7 @@ angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
             for ( var i = 0; i < 50; i += 1 ) {
                 var date = new Date();
                 var eventType = Math.floor( Math.random() * 2 );
-                var startDay = Math.floor( Math.random() * 45 ) - 45;
+                var startDay = Math.floor( Math.random() * 90 ) - 45;
                 var endDay = Math.floor( Math.random() * 15 ) + startDay;
                 var startTime;
                 var endTime;

@@ -51,7 +51,6 @@
 								'monthview-current': dt.current&&!dt.selected&&!dt.hasEvent,
 								'monthview-secondary-with-event': dt.secondary&&dt.hasEvent,
 								'monthview-secondary': dt.secondary,
-
 								'monthview-selected': dt.selected,
 								'lastDayOfWeek': (($index + 1) % 7) === 0
 								}">
@@ -101,7 +100,7 @@
 					 flex-xl="85"
 					 class="event-detail-column">
 					<span class="event-detail-title" ng-click="eventSelected({event:event})"> {{event.title}}</span><br>
-					<small class="event-detail-body" ng-if="event.description"> {{event.description}}</small>
+					<!--<small class="event-detail-body" ng-if="event.description"> {{event.description}}</small>-->
 					<md-divider ng-if="!$last"></md-divider>
 				</div>
 

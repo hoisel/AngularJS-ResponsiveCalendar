@@ -58,14 +58,29 @@
 }
 
 .calendar-event-inner {
-	overflow: hidden;
+	/*overflow: hidden;
 	background-color: #3a87ad;
 	color: white;
 	height: 100%;
 	width: 100%;
 	padding: 2px;
-	line-height: 15px;
+	line-height: 15px;*/
+	overflow: hidden;
+	background-color: #3a87ad;
+	color: #fff;
+	height: 100%;
+	width: 100%;
+	padding: 10px 0 10px 10px;
+	line-height: 25px;
+	border-radius: 3px;
+	margin-bottom: 5px;
 }
+
+.calendar-event-inner .md-title{
+	font-size:18px;
+}
+
+
 
 .calendar-cell {
 	padding: 0 !important;
@@ -257,8 +272,7 @@ md-grid-list md-grid-tile .date {
 	margin-left: 30px;
 }
 
-
-#events-detail .event-time-column{
+#events-detail .event-time-column {
 	text-align: center;
 	font-weight: bold;
 }
@@ -269,5 +283,5 @@ md-grid-list md-grid-tile .date {
 }
 
 #events-detail .event-detail-column .event-detail-title {
-	color:  rgb(57, 73, 171);
+	color: rgb(57, 73, 171);
 }
