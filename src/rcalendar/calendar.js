@@ -185,7 +185,8 @@ angular.module('ui.rCalendar', [])
                 var calendarCtrl = ctrls[0],
                     ngModelCtrl = ctrls[1];
 
-                function getDates(startDate, n) {
+
+                function generateDaysFrom(startDate, n) {
                     var dates = new Array(n), current = new Date(startDate), i = 0;
                     current.setHours(12); // Prevent repeated dates because of timezone bug
                     while (i < n) {
@@ -194,6 +195,7 @@ angular.module('ui.rCalendar', [])
                     }
                     return dates;
                 }
+
 
                 function createDateObject(date, format) {
                     return {
@@ -206,14 +208,6 @@ angular.module('ui.rCalendar', [])
                 }
 
                 function compareEvent(event1, event2) {
-                    /*if (event1.allDay) {
-                        return 1;
-                    } else if (event2.allDay) {
-                        return -1;
-                    } else {
-                        return (event1.startTime.getTime() - event2.startTime.getTime());
-                    }
-*/
                     return (event1.startTime.getTime() - event2.startTime.getTime());
                 }
 
@@ -257,6 +251,7 @@ angular.module('ui.rCalendar', [])
                         }
                     }
                 }
+
                 scope.formatHourColumn = calendarCtrl.formatHourColumn;
                 scope.showEventDetail = calendarCtrl.showEventDetail;
                 scope.select = select;
@@ -267,12 +262,17 @@ angular.module('ui.rCalendar', [])
 
                 calendarCtrl._refreshView = function () {
                     var startDate = calendarCtrl.range.startTime,
-                        date = startDate.getDate(),
-                        month = (startDate.getMonth() + (date !== 1 ? 1 : 0)) % 12,
-                        year = startDate.getFullYear() + (date !== 1 && month === 0 ? 1 : 0);
+                        day = startDate.getDate(),
+                        month = (startDate.getMonth() + (day !== 1 ? 1 : 0)) % 12,
+                        year = startDate.getFullYear() + (day !== 1 && month === 0 ? 1 : 0);
 
-                    var days = getDates(startDate, 42);
+                    var days = generateDaysFrom(startDate, 42);
+
+                    // attach metadata to each day
                     for (var i = 0; i < 42; i++) {
+
+                        console.log(days[i])
+
                         days[i] = angular.extend(createDateObject(days[i], calendarCtrl.formatDay), {
                             secondary: days[i].getMonth() !== month
                         });
@@ -427,93 +427,3 @@ angular.module('ui.rCalendar', [])
             }
         };
     }]);
-    /*.directive('dayview', ['dateFilter', '$timeout', function (dateFilter, $timeout) {
-        'use strict';
-        return {
-            restrict: 'EA',
-            replace: true,
-            templateUrl: 'template/rcalendar/day.html',
-            require: '^calendar',
-            link: function (scope, element, attrs, ctrl) {
-                scope.formatHourColumn = ctrl.formatHourColumn;
-
-                ctrl.mode = {
-                    step: {days: 1}
-                };
-
-                function createDateObject(date, format) {
-                    return {
-                        date: date,
-                        label: dateFilter(date, format)
-                    };
-                }
-
-                scope.select = function (selectedTime) {
-                    if (scope.timeSelected) {
-                        scope.timeSelected({selectedTime: selectedTime});
-                    }
-                };
-
-                ctrl._onDataLoaded = function () {
-                    var eventSource = ctrl.eventSource,
-                        len = eventSource.length,
-                        startTime = ctrl.range.startTime,
-                        endTime = ctrl.range.endTime,
-                        utcStartTime = new Date(startTime.getTime()),
-                        utcEndTime = new Date(endTime.getTime()),
-                        day = scope.day;
-
-
-                    day.events = [];
-                    day.allDayEvents = [];
-                    day.hasEvent = false;
-
-
-                    for (var i = 0; i < len; i += 1) {
-                        var event = eventSource[i];
-                        var eventStartTime = new Date(event.startTime);
-                        var eventEndTime = new Date(event.endTime);
-
-                        if (event.allDay) {
-                            if (eventEndTime <= utcStartTime || eventStartTime >= utcEndTime) {
-                                continue;
-                            } else {
-                                day.allDayEvents.push(event);
-                            }
-                        }
-                        else {
-                            if (eventEndTime <= startTime || eventStartTime >= endTime) {
-                                continue;
-                            } else {
-                                day.events.push(event);
-                            }
-                        }
-
-                        day.hasEvent = !!day.events.length || !!day.allDayEvents.length;
-                    }
-                };
-
-                ctrl._refreshView = function () {
-                    var startingDate = ctrl.range.startTime;
-
-                    scope.day = createDateObject(startingDate, ctrl.formatDayHeader);
-                    scope.$parent.title = dateFilter(startingDate, ctrl.formatDayTitle); //todo: remover?
-                };
-
-                ctrl._getRange = function getRange(currentDate) {
-                    var year = currentDate.getFullYear(),
-                        month = currentDate.getMonth(),
-                        date = currentDate.getDate(),
-                        startTime = new Date(year, month, date),
-                        endTime = new Date(year, month, date + 1);
-
-                    return {
-                        startTime: startTime,
-                        endTime: endTime
-                    };
-                };
-
-                ctrl.refreshView();
-            }
-        };
-    }]);*/
