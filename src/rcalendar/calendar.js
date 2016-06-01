@@ -197,10 +197,9 @@ angular.module('ui.rCalendar', [])
                 }
 
 
-                function createDateObject(date, format) {
+                function createDateMetadata(date) {
                     return {
-                        date: date,
-                        label: dateFilter(date, format),
+                        label: dateFilter(date, calendarCtrl.formatDay),
                         headerLabel: dateFilter(date,calendarCtrl.formatDayHeader),
                         selected: calendarCtrl.compare(date, calendarCtrl.currentCalendarDate) === 0,
                         current: calendarCtrl.compare(date, new Date()) === 0
@@ -235,7 +234,7 @@ angular.module('ui.rCalendar', [])
                         if (direction === 0) {
                             for (var row = 0; row < 6; row += 1) {
                                 for (var date = 0; date < 7; date += 1) {
-                                    var selected = calendarCtrl.compare(selectedDate, weeks[row][date].date) === 0;
+                                    var selected = calendarCtrl.compare(selectedDate, weeks[row][date]) === 0;
                                     weeks[row][date].selected = selected;
                                     if (selected) {
                                         scope.selectedDate = weeks[row][date];
@@ -270,17 +269,14 @@ angular.module('ui.rCalendar', [])
 
                     // attach metadata to each day
                     for (var i = 0; i < 42; i++) {
-
-                        console.log(days[i])
-
-                        days[i] = angular.extend(createDateObject(days[i], calendarCtrl.formatDay), {
+                        angular.extend( days[i], createDateMetadata(days[i]), {
                             secondary: days[i].getMonth() !== month
                         });
                     }
 
                     scope.labels = new Array(7);
                     for (var j = 0; j < 7; j++) {
-                        scope.labels[j] = dateFilter(days[j].date, calendarCtrl.formatDayHeader);
+                        scope.labels[j] = dateFilter(days[j], calendarCtrl.formatDayHeader);
                     }
 
                     var headerDate = new Date(year, month, 1);
@@ -320,22 +316,6 @@ angular.module('ui.rCalendar', [])
                         var eventEndTime = new Date(event.endTime);
                         var st;
                         var et;
-
-                     /*   if (event.allDay) {
-                            if (eventEndTime <= utcStartTime || eventStartTime >= utcEndTime) {
-                                continue;
-                            } else {
-                                st = utcStartTime;
-                                et = utcEndTime;
-                            }
-                        } else {
-                            if (eventEndTime <= startTime || eventStartTime >= endTime) {
-                                continue;
-                            } else {
-                                st = startTime;
-                                et = endTime;
-                            }
-                        }*/
 
                         if (eventEndTime <= startTime || eventStartTime >= endTime) {
                             continue;

@@ -39,8 +39,8 @@
 					  						  .concat(weeks[2])
 					  						  .concat(weeks[3])
 					  						  .concat(weeks[4])
-					  						  .concat(weeks[5]) track by dt.date"
-							  ng-click="select(dt.date)"
+					  						  .concat(weeks[5]) track by dt"
+							  ng-click="select(dt)"
 							  class="monthview-dateCell"
 							  ng-focus="focus = true;"
 							  ng-blur="focus = false;"
@@ -82,7 +82,7 @@
 
 			<md-list-item layout="row" layout-align="start start">
 				<div flex="15">
-					<div class="md-display-1">{{selectedDate.date.getDate()}}</div>
+					<div class="md-display-1">{{selectedDate.getDate()}}</div>
 
 					<div class="md-body-2">{{selectedDate.headerLabel}}</div>
 				</div>

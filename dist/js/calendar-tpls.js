@@ -186,7 +186,8 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
                 var calendarCtrl = ctrls[0],
                     ngModelCtrl = ctrls[1];
 
-                function getDates(startDate, n) {
+
+                function generateDaysFrom(startDate, n) {
                     var dates = new Array(n), current = new Date(startDate), i = 0;
                     current.setHours(12); // Prevent repeated dates because of timezone bug
                     while (i < n) {
@@ -196,10 +197,10 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
                     return dates;
                 }
 
-                function createDateObject(date, format) {
+
+                function createDateMetadata(date) {
                     return {
-                        date: date,
-                        label: dateFilter(date, format),
+                        label: dateFilter(date, calendarCtrl.formatDay),
                         headerLabel: dateFilter(date,calendarCtrl.formatDayHeader),
                         selected: calendarCtrl.compare(date, calendarCtrl.currentCalendarDate) === 0,
                         current: calendarCtrl.compare(date, new Date()) === 0
@@ -207,14 +208,6 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
                 }
 
                 function compareEvent(event1, event2) {
-                    /*if (event1.allDay) {
-                        return 1;
-                    } else if (event2.allDay) {
-                        return -1;
-                    } else {
-                        return (event1.startTime.getTime() - event2.startTime.getTime());
-                    }
-*/
                     return (event1.startTime.getTime() - event2.startTime.getTime());
                 }
 
@@ -242,7 +235,7 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
                         if (direction === 0) {
                             for (var row = 0; row < 6; row += 1) {
                                 for (var date = 0; date < 7; date += 1) {
-                                    var selected = calendarCtrl.compare(selectedDate, weeks[row][date].date) === 0;
+                                    var selected = calendarCtrl.compare(selectedDate, weeks[row][date]) === 0;
                                     weeks[row][date].selected = selected;
                                     if (selected) {
                                         scope.selectedDate = weeks[row][date];
@@ -258,6 +251,7 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
                         }
                     }
                 }
+
                 scope.formatHourColumn = calendarCtrl.formatHourColumn;
                 scope.showEventDetail = calendarCtrl.showEventDetail;
                 scope.select = select;
@@ -268,20 +262,22 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
 
                 calendarCtrl._refreshView = function () {
                     var startDate = calendarCtrl.range.startTime,
-                        date = startDate.getDate(),
-                        month = (startDate.getMonth() + (date !== 1 ? 1 : 0)) % 12,
-                        year = startDate.getFullYear() + (date !== 1 && month === 0 ? 1 : 0);
+                        day = startDate.getDate(),
+                        month = (startDate.getMonth() + (day !== 1 ? 1 : 0)) % 12,
+                        year = startDate.getFullYear() + (day !== 1 && month === 0 ? 1 : 0);
 
-                    var days = getDates(startDate, 42);
+                    var days = generateDaysFrom(startDate, 42);
+
+                    // attach metadata to each day
                     for (var i = 0; i < 42; i++) {
-                        days[i] = angular.extend(createDateObject(days[i], calendarCtrl.formatDay), {
+                        angular.extend( days[i], createDateMetadata(days[i]), {
                             secondary: days[i].getMonth() !== month
                         });
                     }
 
                     scope.labels = new Array(7);
                     for (var j = 0; j < 7; j++) {
-                        scope.labels[j] = dateFilter(days[j].date, calendarCtrl.formatDayHeader);
+                        scope.labels[j] = dateFilter(days[j], calendarCtrl.formatDayHeader);
                     }
 
                     var headerDate = new Date(year, month, 1);
@@ -428,96 +424,6 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
             }
         };
     }]);
-    /*.directive('dayview', ['dateFilter', '$timeout', function (dateFilter, $timeout) {
-        'use strict';
-        return {
-            restrict: 'EA',
-            replace: true,
-            templateUrl: 'template/rcalendar/day.html',
-            require: '^calendar',
-            link: function (scope, element, attrs, ctrl) {
-                scope.formatHourColumn = ctrl.formatHourColumn;
-
-                ctrl.mode = {
-                    step: {days: 1}
-                };
-
-                function createDateObject(date, format) {
-                    return {
-                        date: date,
-                        label: dateFilter(date, format)
-                    };
-                }
-
-                scope.select = function (selectedTime) {
-                    if (scope.timeSelected) {
-                        scope.timeSelected({selectedTime: selectedTime});
-                    }
-                };
-
-                ctrl._onDataLoaded = function () {
-                    var eventSource = ctrl.eventSource,
-                        len = eventSource.length,
-                        startTime = ctrl.range.startTime,
-                        endTime = ctrl.range.endTime,
-                        utcStartTime = new Date(startTime.getTime()),
-                        utcEndTime = new Date(endTime.getTime()),
-                        day = scope.day;
-
-
-                    day.events = [];
-                    day.allDayEvents = [];
-                    day.hasEvent = false;
-
-
-                    for (var i = 0; i < len; i += 1) {
-                        var event = eventSource[i];
-                        var eventStartTime = new Date(event.startTime);
-                        var eventEndTime = new Date(event.endTime);
-
-                        if (event.allDay) {
-                            if (eventEndTime <= utcStartTime || eventStartTime >= utcEndTime) {
-                                continue;
-                            } else {
-                                day.allDayEvents.push(event);
-                            }
-                        }
-                        else {
-                            if (eventEndTime <= startTime || eventStartTime >= endTime) {
-                                continue;
-                            } else {
-                                day.events.push(event);
-                            }
-                        }
-
-                        day.hasEvent = !!day.events.length || !!day.allDayEvents.length;
-                    }
-                };
-
-                ctrl._refreshView = function () {
-                    var startingDate = ctrl.range.startTime;
-
-                    scope.day = createDateObject(startingDate, ctrl.formatDayHeader);
-                    scope.$parent.title = dateFilter(startingDate, ctrl.formatDayTitle); //todo: remover?
-                };
-
-                ctrl._getRange = function getRange(currentDate) {
-                    var year = currentDate.getFullYear(),
-                        month = currentDate.getMonth(),
-                        date = currentDate.getDate(),
-                        startTime = new Date(year, month, date),
-                        endTime = new Date(year, month, date + 1);
-
-                    return {
-                        startTime: startTime,
-                        endTime: endTime
-                    };
-                };
-
-                ctrl.refreshView();
-            }
-        };
-    }]);*/
 angular.module("template/rcalendar/calendar.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/rcalendar/calendar.html",
     "<div ng-switch=\"calendarMode\" layout=\"column\" ng-cloak>\n" +
@@ -625,8 +531,8 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "					  						  .concat(weeks[2])\n" +
     "					  						  .concat(weeks[3])\n" +
     "					  						  .concat(weeks[4])\n" +
-    "					  						  .concat(weeks[5]) track by dt.date\"\n" +
-    "							  ng-click=\"select(dt.date)\"\n" +
+    "					  						  .concat(weeks[5]) track by dt\"\n" +
+    "							  ng-click=\"select(dt)\"\n" +
     "							  class=\"monthview-dateCell\"\n" +
     "							  ng-focus=\"focus = true;\"\n" +
     "							  ng-blur=\"focus = false;\"\n" +
@@ -668,7 +574,7 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "\n" +
     "			<md-list-item layout=\"row\" layout-align=\"start start\">\n" +
     "				<div flex=\"15\">\n" +
-    "					<div class=\"md-display-1\">{{selectedDate.date.getDate()}}</div>\n" +
+    "					<div class=\"md-display-1\">{{selectedDate.getDate()}}</div>\n" +
     "\n" +
     "					<div class=\"md-body-2\">{{selectedDate.headerLabel}}</div>\n" +
     "				</div>\n" +
