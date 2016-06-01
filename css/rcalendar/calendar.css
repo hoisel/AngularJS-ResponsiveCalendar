@@ -51,37 +51,6 @@
 	height: 100%;
 }
 
-.calendar-event {
-	position: absolute;
-	padding: 2px;
-	cursor: pointer;
-}
-
-.calendar-event-inner {
-	/*overflow: hidden;
-	background-color: #3a87ad;
-	color: white;
-	height: 100%;
-	width: 100%;
-	padding: 2px;
-	line-height: 15px;*/
-	overflow: hidden;
-	background-color: #3a87ad;
-	color: #fff;
-	height: 100%;
-	width: 100%;
-	padding: 10px 0 10px 10px;
-	line-height: 25px;
-	border-radius: 3px;
-	margin-bottom: 5px;
-}
-
-.calendar-event-inner .md-title{
-	font-size:18px;
-}
-
-
-
 .calendar-cell {
 	padding: 0 !important;
 	height: 37px;
@@ -97,6 +66,10 @@
 	background-color: rgb(57, 73, 171);
 	color: white;
 	font-weight: bold !important;
+}
+
+.monthview-selected .date {
+	color: #fff;
 }
 
 .monthview-primary-with-event .date {
@@ -121,9 +94,10 @@ md-grid-list md-grid-tile .date {
 	top: 0;
 	right: 0;
 	/* outline: red solid 1px; */
-	font-size: 11px !important;
+	/*font-size: 11px !important;*/
 	line-height: initial !important;
 	padding: 3px !important;
+	background-color: transparent;
 }
 
 .monthview-secondary-with-event {
@@ -262,26 +236,81 @@ md-grid-list md-grid-tile .date {
 	background-color: rgba(226, 229, 245, 0.74);
 }
 
-#events-detail {
-	margin: 0;
+.lastDayOfWeek {
+	border-right: 1px solid rgba(0, 0, 0, .05);
+}
+
+.monthview-dateCell {
+	cursor: pointer;
+	border-top: 1px solid rgba(0, 0, 0, .05);
+	border-left: 1px solid rgba(0, 0, 0, .05);
+}
+
+.text-muted {
+	color: #908f8f;
+}
+
+/*.monthview-dateCell .date {
+	background-color: transparent;
+	text-align: right;
+	padding-top: 0;
+	padding-right: 5px;
+}*/
+
+#day-events {
 	padding: 0;
 	font-size: 14px;
+	margin: 20px 0 0 0;
 }
 
-#events-detail.md {
-	margin-left: 30px;
+#day-events.md {
+	margin-left: 20px;
+	margin-top: 35px;
 }
 
-#events-detail .event-time-column {
+#day-events .event {
+	padding: 0 16px 0 0;
+}
+
+#day-events .event-date { font-size: 30px;
+	font-weight: 400;
+	line-height: 30px;
+}
+
+#day-events .event-inner {
+	overflow: hidden;
+	background-color: #3a87ad;
+	color: #fff;
+	height: 100%;
+	width: 100%;
+	padding: 10px 0 10px 10px;
+	line-height: 25px;
+	border-radius: 3px;
+	margin-bottom: 5px;
+}
+
+#day-events .event-inner .md-title {
+	font-size: 18px;
+}
+
+/*
+#day-events .event-time-column {
 	text-align: center;
 	font-weight: bold;
 }
 
-#events-detail .event-detail-column {
+#day-events .event-detail-column {
 	padding: 7px 0 7px 7px;
 	border-left: 1px solid rgba(0, 0, 0, .05);
 }
 
-#events-detail .event-detail-column .event-detail-title {
+#day-events .event-detail-column .event-detail-title {
 	color: rgb(57, 73, 171);
+}
+*/
+
+.fixed {
+	position: fixed;
+	top: 0;
+	z-index: 200;
 }

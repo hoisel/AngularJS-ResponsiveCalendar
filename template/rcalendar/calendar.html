@@ -1,20 +1,19 @@
-<div ng-switch="calendarMode" layout="column" ng-cloak>
-	<md-toolbar>
+<div layout="column" ng-cloak>
+	<md-toolbar sticky offset="0" sticky-class="fixed">
 		<div class='md-toolbar-tools' layout='row'>
-			<md-button class="md-icon-button" ng-click="move(-1)" aria-label="Mês anterior">
+			<md-button class="md-icon-button" ng-click="moveMonth(-1)" aria-label="Mês anterior">
 				<md-icon md-svg-icon="md-tabs-arrow">«</md-icon>
 			</md-button>
 			<div flex></div>
 			<h2 class='calendar-md-title'>
 				<span>{{title}}</span></h2>
 			<div flex></div>
-			<md-button class="md-icon-button" ng-click="move(1)" aria-label="Mês seguinte">
+			<md-button class="md-icon-button" ng-click="moveMonth(1)" aria-label="Mês seguinte">
 				<md-icon md-svg-icon="md-tabs-arrow" class="moveNext"></md-icon>
 			</md-button>
 		</div>
 	</md-toolbar>
-	<md-content layout-fill md-swipe-left='move(1)' md-swipe-right='move(-1)'>
-		<dayview ng-switch-when="day"></dayview>
-		<monthview ng-switch-when="month"></monthview>
-	</md-content>
+	<div layout-fill>
+		<monthview></monthview>
+	</div>
 </div>
