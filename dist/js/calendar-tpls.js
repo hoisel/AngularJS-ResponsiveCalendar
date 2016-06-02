@@ -436,7 +436,7 @@ angular.module("template/rcalendar/calendar.html", []).run(["$templateCache", fu
     "			</md-button>\n" +
     "		</div>\n" +
     "	</md-toolbar>\n" +
-    "	<div layout-fill>\n" +
+    "	<div>\n" +
     "		<monthview></monthview>\n" +
     "	</div>\n" +
     "</div>\n" +
@@ -542,11 +542,12 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "\n" +
     "		<md-list id=\"day-events\"\n" +
     "				 ng-if=\"showEventsList && selectedDate.events\"\n" +
-    "				 ng-class=\"{ md: $mdMedia('gt-sm')}\"\n" +
     "				 flex\n" +
     "				 flex-gt-sm=\"40\"\n" +
     "				 flex-gt-lg=\"20\"\n" +
-    "				 md-swipe-left='moveDay(1)' md-swipe-right='moveDay(-1)'>\n" +
+    "				 md-swipe-left='moveDay(1)'\n" +
+    "				 md-swipe-right='moveDay(-1)'\n" +
+    "				 ng-class=\"{ md: $mdMedia('gt-sm')}\">\n" +
     "\n" +
     "			<!--	<md-list-item layout=\"row\" layout-align=\"start start\" class=\"calendar-event\">\n" +
     "					<div layout=\"column\" layout-fill>\n" +
@@ -557,18 +558,23 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "				</md-list-item>-->\n" +
     "			<md-list-item layout=\"row\"\n" +
     "						  layout-gt-sm=\"column\"\n" +
-    "						  layout-align=\"start start\"\n" +
+    "						  layout-align=\"start stretch\"\n" +
     "						  class=\"event\">\n" +
-    "				<div flex=\"15\">\n" +
-    "					<div sticky offset=\"60\" sticky-class=\"fixed\">\n" +
-    "						<div class=\"event-date\">{{selectedDate.getDate()}}</div>\n" +
+    "				<div flex=\"15\" flex-gt-sm=\"100\" class=\"event-date-wrapper\">\n" +
+    "					<div hide show-gt-sm>\n" +
+    "						<div class=\"event-date\">{{selectedDate|date: 'dd EEE' }}</div>\n" +
+    "					</div>\n" +
+    "					<div hide-gt-sm\n" +
+    "						 sticky\n" +
+    "						 offset=\"60\"\n" +
+    "						 sticky-class=\"fixed\">\n" +
+    "						<div class=\"event-date\">{{selectedDate|date: 'dd' }}</div>\n" +
     "						<div class=\"md-body-2\">{{selectedDate.headerLabel}}</div>\n" +
     "					</div>\n" +
     "				</div>\n" +
     "\n" +
     "				<div layout=\"column\"\n" +
-    "					 layout-fill\n" +
-    "					 flex=\"85\">\n" +
+    "					 flex=\"85\" flex-gt-sm=\"100\">\n" +
     "					<div class=\"event-inner\" ng-repeat=\"event in selectedDate.events track by $index\">\n" +
     "						<div class=\"md-body-2\"><strong>{{event.title}}</strong></div>\n" +
     "						<div class=\"md-body-2\">{{event.startTime|date: formatHourColumn}} - {{event.endTime|date: formatHourColumn}}</div>\n" +
