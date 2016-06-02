@@ -47,6 +47,7 @@
 							 class="month-events"
 							 ng-class="{ sm: $mdMedia('gt-xs'),  md: $mdMedia('gt-sm'), lg: $mdMedia('gt-md')}">
 							<div class="month-event left"
+								 md-colors="{background: 'primary-800'}"
 								 ng-repeat="ev in dt.events track by ev.title"></div>
 						</div>
 					</div>
@@ -63,18 +64,14 @@
 				 md-swipe-right='moveDay(-1)'
 				 ng-class="{ md: $mdMedia('gt-sm')}">
 
-			<!--	<md-list-item layout="row" layout-align="start start" class="calendar-event">
-					<div layout="column" layout-fill>
-						<md-subheader class="md-no-sticky">
-							<div>{{selectedDate|date: 'dd MMMM ' }}</div>
-						</md-subheader>
-					</div>
-				</md-list-item>-->
 			<md-list-item layout="row"
 						  layout-gt-sm="column"
 						  layout-align="start stretch"
 						  class="event">
-				<div flex="15" flex-gt-sm="100" class="event-date-wrapper">
+				<div flex="15"
+					 flex-gt-sm="100"
+					 md-colors="{color: 'accent'}"
+					 class="event-date-wrapper">
 					<div hide show-gt-sm>
 						<div class="event-date">{{selectedDate|date: 'dd EEE' }}</div>
 					</div>
@@ -89,7 +86,9 @@
 
 				<div layout="column"
 					 flex="85" flex-gt-sm="100">
-					<div class="event-inner" ng-repeat="event in selectedDate.events track by $index">
+					<div class="event-inner"
+						 ng-repeat="event in selectedDate.events track by $index"
+						 md-colors="{background: 'primary-600'}">
 						<div class="md-body-2"><strong>{{event.title}}</strong></div>
 						<div class="md-body-2">{{event.startTime|date: formatHourColumn}} - {{event.endTime|date: formatHourColumn}}</div>
 					</div>

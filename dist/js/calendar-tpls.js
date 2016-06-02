@@ -38,6 +38,7 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
                 self[key] = angular.isDefined($attrs[key]) ? (index < 7 ? $interpolate($attrs[key])($scope.$parent) : $scope.$parent.$eval($attrs[key])) : calendarConfig[key];
             });
 
+
         $scope.$mdMedia = $mdMedia;
         $scope.$parent.$watch($attrs.eventSource, function (value) {
             self.onEventSourceChanged(value);
@@ -533,6 +534,7 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "							 class=\"month-events\"\n" +
     "							 ng-class=\"{ sm: $mdMedia('gt-xs'),  md: $mdMedia('gt-sm'), lg: $mdMedia('gt-md')}\">\n" +
     "							<div class=\"month-event left\"\n" +
+    "								 md-colors=\"{background: 'primary-800'}\"\n" +
     "								 ng-repeat=\"ev in dt.events track by ev.title\"></div>\n" +
     "						</div>\n" +
     "					</div>\n" +
@@ -549,18 +551,14 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "				 md-swipe-right='moveDay(-1)'\n" +
     "				 ng-class=\"{ md: $mdMedia('gt-sm')}\">\n" +
     "\n" +
-    "			<!--	<md-list-item layout=\"row\" layout-align=\"start start\" class=\"calendar-event\">\n" +
-    "					<div layout=\"column\" layout-fill>\n" +
-    "						<md-subheader class=\"md-no-sticky\">\n" +
-    "							<div>{{selectedDate|date: 'dd MMMM ' }}</div>\n" +
-    "						</md-subheader>\n" +
-    "					</div>\n" +
-    "				</md-list-item>-->\n" +
     "			<md-list-item layout=\"row\"\n" +
     "						  layout-gt-sm=\"column\"\n" +
     "						  layout-align=\"start stretch\"\n" +
     "						  class=\"event\">\n" +
-    "				<div flex=\"15\" flex-gt-sm=\"100\" class=\"event-date-wrapper\">\n" +
+    "				<div flex=\"15\"\n" +
+    "					 flex-gt-sm=\"100\"\n" +
+    "					 md-colors=\"{color: 'accent'}\"\n" +
+    "					 class=\"event-date-wrapper\">\n" +
     "					<div hide show-gt-sm>\n" +
     "						<div class=\"event-date\">{{selectedDate|date: 'dd EEE' }}</div>\n" +
     "					</div>\n" +
@@ -575,7 +573,9 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "\n" +
     "				<div layout=\"column\"\n" +
     "					 flex=\"85\" flex-gt-sm=\"100\">\n" +
-    "					<div class=\"event-inner\" ng-repeat=\"event in selectedDate.events track by $index\">\n" +
+    "					<div class=\"event-inner\"\n" +
+    "						 ng-repeat=\"event in selectedDate.events track by $index\"\n" +
+    "						 md-colors=\"{background: 'primary-600'}\">\n" +
     "						<div class=\"md-body-2\"><strong>{{event.title}}</strong></div>\n" +
     "						<div class=\"md-body-2\">{{event.startTime|date: formatHourColumn}} - {{event.endTime|date: formatHourColumn}}</div>\n" +
     "					</div>\n" +
