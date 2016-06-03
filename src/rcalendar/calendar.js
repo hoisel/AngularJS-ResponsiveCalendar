@@ -7,17 +7,14 @@ angular.module('ui.rCalendar', [])
         formatMonthTitle: 'MMMM yyyy',
         formatWeekViewDayHeader: 'EEE d',
         formatHourColumn: 'MMMM dd, HH:mm',
-        showWeeks: false,
-        showEventsList: true,
-        showEvents: true,
         startingDay: 0,
         eventSource: null,
         queryMode: 'local'
     })
     .controller('ui.rCalendar.CalendarController', ['$scope', '$attrs', '$parse', '$interpolate', '$log', '$mdMedia', 'dateFilter', 'calendarConfig', function ($scope, $attrs, $parse, $interpolate, $log, $mdMedia, dateFilter, calendarConfig) {
         'use strict';
-        var self = this,
-            ngModelCtrl = {$setViewValue: angular.noop}; // nullModelCtrl;
+        var self = this;
+        var ngModelCtrl = {$setViewValue: angular.noop}; // nullModelCtrl;
 
         // Configuration attributes
         angular.forEach(['formatDay',
@@ -27,9 +24,6 @@ angular.module('ui.rCalendar', [])
             'formatMonthTitle',
             'formatWeekViewDayHeader',
             'formatHourColumn',
-            'showWeeks',
-            'showEventsList',
-            'showEvents',
             'startingDay',
             'eventSource',
             'queryMode'],
@@ -37,14 +31,13 @@ angular.module('ui.rCalendar', [])
                 self[key] = angular.isDefined($attrs[key]) ? (index < 7 ? $interpolate($attrs[key])($scope.$parent) : $scope.$parent.$eval($attrs[key])) : calendarConfig[key];
             });
 
-
         $scope.$mdMedia = $mdMedia;
         $scope.$parent.$watch($attrs.eventSource, function (value) {
             self.onEventSourceChanged(value);
         });
-        $scope.formatHourColumn = self.formatHourColumn;
-        $scope.showEventsList = self.showEventsList;
-        $scope.showEvents = self.showEvents;
+/*        $scope.formatHourColumn = self.formatHourColumn;
+        $scope.showEventList = self.showEventList;
+        $scope.showEventPins = self.showEventPins;*/
 
         if (angular.isDefined($attrs.initDate)) {
             self.currentCalendarDate = $scope.$parent.$eval($attrs.initDate);
@@ -160,6 +153,7 @@ angular.module('ui.rCalendar', [])
         };
 
         $scope.moveMonth = function (step) {
+
             var currentCalendarDate = self.currentCalendarDate,
                 year = currentCalendarDate.getFullYear(),
                 month = currentCalendarDate.getMonth() + step,
@@ -167,13 +161,13 @@ angular.module('ui.rCalendar', [])
                 firstDayInNextMonth;
 
             currentCalendarDate.setFullYear(year, month, date);
-
             firstDayInNextMonth = new Date(year, month + 1, 1);
             if (firstDayInNextMonth.getTime() <= currentCalendarDate.getTime()) {
                 self.currentCalendarDate = new Date(firstDayInNextMonth - 24 * 60 * 60 * 1000);
             }
 
             ngModelCtrl.$setViewValue(self.currentCalendarDate);
+
             self.refreshView();
         };
 
@@ -184,14 +178,10 @@ angular.module('ui.rCalendar', [])
                 date = currentCalendarDate.getDate() + step;
 
             currentCalendarDate.setFullYear(year, month, date);
-
             ngModelCtrl.$setViewValue(self.currentCalendarDate);
             self.refreshView();
         };
 
-        self.move = function (direction) {
-            $scope.move(direction);
-        };
 
         self.compare = function (date1, date2) {
             return (new Date(date1.getFullYear(), date1.getMonth(), date1.getDate()) - new Date(date2.getFullYear(), date2.getMonth(), date2.getDate()) );
@@ -203,8 +193,8 @@ angular.module('ui.rCalendar', [])
                     self._onDataLoaded();
                 }
             } else if (self.queryMode === 'remote') {
-                if ($scope.viewRefreshed) {
-                    $scope.viewRefreshed({
+                if (self.viewRefreshed) {
+                    self.viewRefreshed({
                         startTime: this.range.startTime,
                         endTime: this.range.endTime
                     });
@@ -216,7 +206,7 @@ angular.module('ui.rCalendar', [])
             return (event1.startTime.getTime() - event2.startTime.getTime());
         }
 
-        function select(selectedDate) {
+        $scope.select = function(selectedDate) {
             var weeks =  $scope.weeks;
             if (weeks) {
                 var currentCalendarDate = self.currentCalendarDate;
@@ -234,6 +224,7 @@ angular.module('ui.rCalendar', [])
                 }
 
                 self.currentCalendarDate = selectedDate;
+
                 if (ngModelCtrl) {
                     ngModelCtrl.$setViewValue(selectedDate);
                 }
@@ -251,13 +242,11 @@ angular.module('ui.rCalendar', [])
                     self.refreshView();
                 }
 
-                if ( $scope.timeSelected) {
-                    $scope.timeSelected({selectedTime: selectedDate});
+                if ( self.timeSelected) {
+                    self.timeSelected({selectedTime: selectedDate});
                 }
             }
-        }
-
-        $scope.select = select;
+        };
 
         self.mode = {
             step: {months: 1}
@@ -346,7 +335,7 @@ angular.module('ui.rCalendar', [])
             for (row = 0; row < 6; row += 1) {
                 for (date = 0; date < 7; date += 1) {
                     if (weeks[row][date].selected) {
-                        $scope.selectedDate = weeks[row][date];
+                        self.selectedDate = weeks[row][date];
                         findSelected = true;
                         break;
                     }
@@ -387,15 +376,20 @@ angular.module('ui.rCalendar', [])
             restrict: 'EA',
             replace: true,
             templateUrl: 'template/rcalendar/calendar.html',
+           /* scope: true,*/
+            /*controllerAs: 'ctrl',*/
             scope: {
                 viewRefreshed: '&',
                 eventSelected: '&',
-                timeSelected: '&'
+                timeSelected: '&',
+                showEventList: '=',
+                showEventPins: '='
             },
             require: ['calendar', '?^ngModel'],
             controller: 'ui.rCalendar.CalendarController',
             link: function (scope, element, attrs, ctrls) {
-                var self = ctrls[0], ngModelCtrl = ctrls[1];
+                var self = ctrls[0];
+                var ngModelCtrl = ctrls[1];
 
                 if (ngModelCtrl) {
                     self.init(ngModelCtrl);

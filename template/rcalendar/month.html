@@ -31,7 +31,6 @@
 						aria-label="Mês seguinte">
 						<md-icon md-svg-icon="md-tabs-arrow" class="moveNext"></md-icon>
 					</md-button>
-
 				</md-card-header>
 				<md-divider></md-divider>
 				<md-card-content>
@@ -53,10 +52,10 @@
 						<md-grid-tile md-rowspan="1"
 									  md-colspan="1"
 									  ng-repeat="dt in weeks[0].concat(weeks[1])
-					  						  .concat(weeks[2])
-					  						  .concat(weeks[3])
-					  						  .concat(weeks[4])
-					  						  .concat(weeks[5]) track by dt"
+																	.concat(weeks[2])
+																	.concat(weeks[3])
+																	.concat(weeks[4])
+																	.concat(weeks[5]) track by dt"
 									  ng-click="select(dt)"
 									  class="monthview-dateCell"
 									  ng-focus="focus = true;"
@@ -75,12 +74,14 @@
 								<span class="date md-subheader">
 									{{dt.label}}
 								</span>
-								<div ng-if="showEvents"
+								<div ng-if="showEventPins"
 									 class="month-events"
-									 ng-class="{ sm: $mdMedia('gt-xs'),  md: $mdMedia('gt-sm'), lg: $mdMedia('gt-md')}">
+									 ng-class="{ sm: $mdMedia('gt-xs'),
+												 md: $mdMedia('gt-sm'),
+												 lg: $mdMedia('gt-md')}">
 									<div class="month-event-pin left"
-										 ng-style="{'background-color': ev.color}"
-										 ng-repeat="ev in dt.events | orderBy : 'color' track by ev.title"></div>
+										 ng-style="{'background-color': event.color}"
+										 ng-repeat="event in dt.events | orderBy : 'color' track by event.title"></div>
 								</div>
 							</div>
 						</md-grid-tile>
@@ -89,14 +90,15 @@
 			</md-card>
 		</div>
 		<md-card id="day-events"
-				 ng-if="showEventsList"
+				 ng-if="showEventList"
 				 flex
 				 md-swipe-left='moveDay(1)'
 				 md-swipe-right='moveDay(-1)'
 				 class="event-inner"
 				 ng-class="{ md: $mdMedia('gt-sm')}">
 			<md-card-header layout='row'
-							layout-align="space-between center" sticky
+							layout-align="space-between center"
+							sticky
 							offset="55"
 							media-query="max-width: 959px"
 							sticky-class="sticked">

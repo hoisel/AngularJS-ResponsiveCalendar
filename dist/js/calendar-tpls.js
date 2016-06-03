@@ -8,17 +8,14 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
         formatMonthTitle: 'MMMM yyyy',
         formatWeekViewDayHeader: 'EEE d',
         formatHourColumn: 'MMMM dd, HH:mm',
-        showWeeks: false,
-        showEventsList: true,
-        showEvents: true,
         startingDay: 0,
         eventSource: null,
         queryMode: 'local'
     })
     .controller('ui.rCalendar.CalendarController', ['$scope', '$attrs', '$parse', '$interpolate', '$log', '$mdMedia', 'dateFilter', 'calendarConfig', function ($scope, $attrs, $parse, $interpolate, $log, $mdMedia, dateFilter, calendarConfig) {
         'use strict';
-        var self = this,
-            ngModelCtrl = {$setViewValue: angular.noop}; // nullModelCtrl;
+        var self = this;
+        var ngModelCtrl = {$setViewValue: angular.noop}; // nullModelCtrl;
 
         // Configuration attributes
         angular.forEach(['formatDay',
@@ -28,9 +25,6 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
             'formatMonthTitle',
             'formatWeekViewDayHeader',
             'formatHourColumn',
-            'showWeeks',
-            'showEventsList',
-            'showEvents',
             'startingDay',
             'eventSource',
             'queryMode'],
@@ -38,14 +32,13 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
                 self[key] = angular.isDefined($attrs[key]) ? (index < 7 ? $interpolate($attrs[key])($scope.$parent) : $scope.$parent.$eval($attrs[key])) : calendarConfig[key];
             });
 
-
         $scope.$mdMedia = $mdMedia;
         $scope.$parent.$watch($attrs.eventSource, function (value) {
             self.onEventSourceChanged(value);
         });
-        $scope.formatHourColumn = self.formatHourColumn;
-        $scope.showEventsList = self.showEventsList;
-        $scope.showEvents = self.showEvents;
+/*        $scope.formatHourColumn = self.formatHourColumn;
+        $scope.showEventList = self.showEventList;
+        $scope.showEventPins = self.showEventPins;*/
 
         if (angular.isDefined($attrs.initDate)) {
             self.currentCalendarDate = $scope.$parent.$eval($attrs.initDate);
@@ -161,6 +154,7 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
         };
 
         $scope.moveMonth = function (step) {
+
             var currentCalendarDate = self.currentCalendarDate,
                 year = currentCalendarDate.getFullYear(),
                 month = currentCalendarDate.getMonth() + step,
@@ -168,13 +162,13 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
                 firstDayInNextMonth;
 
             currentCalendarDate.setFullYear(year, month, date);
-
             firstDayInNextMonth = new Date(year, month + 1, 1);
             if (firstDayInNextMonth.getTime() <= currentCalendarDate.getTime()) {
                 self.currentCalendarDate = new Date(firstDayInNextMonth - 24 * 60 * 60 * 1000);
             }
 
             ngModelCtrl.$setViewValue(self.currentCalendarDate);
+
             self.refreshView();
         };
 
@@ -185,14 +179,10 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
                 date = currentCalendarDate.getDate() + step;
 
             currentCalendarDate.setFullYear(year, month, date);
-
             ngModelCtrl.$setViewValue(self.currentCalendarDate);
             self.refreshView();
         };
 
-        self.move = function (direction) {
-            $scope.move(direction);
-        };
 
         self.compare = function (date1, date2) {
             return (new Date(date1.getFullYear(), date1.getMonth(), date1.getDate()) - new Date(date2.getFullYear(), date2.getMonth(), date2.getDate()) );
@@ -204,8 +194,8 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
                     self._onDataLoaded();
                 }
             } else if (self.queryMode === 'remote') {
-                if ($scope.viewRefreshed) {
-                    $scope.viewRefreshed({
+                if (self.viewRefreshed) {
+                    self.viewRefreshed({
                         startTime: this.range.startTime,
                         endTime: this.range.endTime
                     });
@@ -217,7 +207,7 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
             return (event1.startTime.getTime() - event2.startTime.getTime());
         }
 
-        function select(selectedDate) {
+        $scope.select = function(selectedDate) {
             var weeks =  $scope.weeks;
             if (weeks) {
                 var currentCalendarDate = self.currentCalendarDate;
@@ -235,6 +225,7 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
                 }
 
                 self.currentCalendarDate = selectedDate;
+
                 if (ngModelCtrl) {
                     ngModelCtrl.$setViewValue(selectedDate);
                 }
@@ -252,13 +243,11 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
                     self.refreshView();
                 }
 
-                if ( $scope.timeSelected) {
-                    $scope.timeSelected({selectedTime: selectedDate});
+                if ( self.timeSelected) {
+                    self.timeSelected({selectedTime: selectedDate});
                 }
             }
-        }
-
-        $scope.select = select;
+        };
 
         self.mode = {
             step: {months: 1}
@@ -347,7 +336,7 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
             for (row = 0; row < 6; row += 1) {
                 for (date = 0; date < 7; date += 1) {
                     if (weeks[row][date].selected) {
-                        $scope.selectedDate = weeks[row][date];
+                        self.selectedDate = weeks[row][date];
                         findSelected = true;
                         break;
                     }
@@ -388,15 +377,20 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
             restrict: 'EA',
             replace: true,
             templateUrl: 'template/rcalendar/calendar.html',
+           /* scope: true,*/
+            /*controllerAs: 'ctrl',*/
             scope: {
                 viewRefreshed: '&',
                 eventSelected: '&',
-                timeSelected: '&'
+                timeSelected: '&',
+                showEventList: '=',
+                showEventPins: '='
             },
             require: ['calendar', '?^ngModel'],
             controller: 'ui.rCalendar.CalendarController',
             link: function (scope, element, attrs, ctrls) {
-                var self = ctrls[0], ngModelCtrl = ctrls[1];
+                var self = ctrls[0];
+                var ngModelCtrl = ctrls[1];
 
                 if (ngModelCtrl) {
                     self.init(ngModelCtrl);
@@ -518,7 +512,6 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "						aria-label=\"Mês seguinte\">\n" +
     "						<md-icon md-svg-icon=\"md-tabs-arrow\" class=\"moveNext\"></md-icon>\n" +
     "					</md-button>\n" +
-    "\n" +
     "				</md-card-header>\n" +
     "				<md-divider></md-divider>\n" +
     "				<md-card-content>\n" +
@@ -540,10 +533,10 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "						<md-grid-tile md-rowspan=\"1\"\n" +
     "									  md-colspan=\"1\"\n" +
     "									  ng-repeat=\"dt in weeks[0].concat(weeks[1])\n" +
-    "					  						  .concat(weeks[2])\n" +
-    "					  						  .concat(weeks[3])\n" +
-    "					  						  .concat(weeks[4])\n" +
-    "					  						  .concat(weeks[5]) track by dt\"\n" +
+    "																	.concat(weeks[2])\n" +
+    "																	.concat(weeks[3])\n" +
+    "																	.concat(weeks[4])\n" +
+    "																	.concat(weeks[5]) track by dt\"\n" +
     "									  ng-click=\"select(dt)\"\n" +
     "									  class=\"monthview-dateCell\"\n" +
     "									  ng-focus=\"focus = true;\"\n" +
@@ -562,12 +555,14 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "								<span class=\"date md-subheader\">\n" +
     "									{{dt.label}}\n" +
     "								</span>\n" +
-    "								<div ng-if=\"showEvents\"\n" +
+    "								<div ng-if=\"showEventPins\"\n" +
     "									 class=\"month-events\"\n" +
-    "									 ng-class=\"{ sm: $mdMedia('gt-xs'),  md: $mdMedia('gt-sm'), lg: $mdMedia('gt-md')}\">\n" +
+    "									 ng-class=\"{ sm: $mdMedia('gt-xs'),\n" +
+    "												 md: $mdMedia('gt-sm'),\n" +
+    "												 lg: $mdMedia('gt-md')}\">\n" +
     "									<div class=\"month-event-pin left\"\n" +
-    "										 ng-style=\"{'background-color': ev.color}\"\n" +
-    "										 ng-repeat=\"ev in dt.events | orderBy : 'color' track by ev.title\"></div>\n" +
+    "										 ng-style=\"{'background-color': event.color}\"\n" +
+    "										 ng-repeat=\"event in dt.events | orderBy : 'color' track by event.title\"></div>\n" +
     "								</div>\n" +
     "							</div>\n" +
     "						</md-grid-tile>\n" +
@@ -576,14 +571,15 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "			</md-card>\n" +
     "		</div>\n" +
     "		<md-card id=\"day-events\"\n" +
-    "				 ng-if=\"showEventsList\"\n" +
+    "				 ng-if=\"showEventList\"\n" +
     "				 flex\n" +
     "				 md-swipe-left='moveDay(1)'\n" +
     "				 md-swipe-right='moveDay(-1)'\n" +
     "				 class=\"event-inner\"\n" +
     "				 ng-class=\"{ md: $mdMedia('gt-sm')}\">\n" +
     "			<md-card-header layout='row'\n" +
-    "							layout-align=\"space-between center\" sticky\n" +
+    "							layout-align=\"space-between center\"\n" +
+    "							sticky\n" +
     "							offset=\"55\"\n" +
     "							media-query=\"max-width: 959px\"\n" +
     "							sticky-class=\"sticked\">\n" +

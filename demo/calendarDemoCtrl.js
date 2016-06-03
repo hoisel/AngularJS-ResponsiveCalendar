@@ -119,6 +119,10 @@ angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
     '$scope', function( $scope ) {
         'use strict';
 
+        $scope.showPins = true;
+
+        $scope.showEventList = true;
+
         $scope.changeMode = function( mode ) {
             $scope.mode = mode;
         };
@@ -128,7 +132,10 @@ angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
         };
 
         $scope.isToday = function() {
-            var today = new Date(), currentCalendarDate = new Date( $scope.currentDate );
+            var today = new Date();
+            var currentCalendarDate = new Date( $scope.currentDate );
+
+            //console.log( $scope.currentDate );
 
             today.setHours( 0, 0, 0, 0 );
             currentCalendarDate.setHours( 0, 0, 0, 0 );
@@ -146,7 +153,6 @@ angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
         $scope.onTimeSelected = function( selectedTime ) {
             console.log( 'Selected time: ' + selectedTime );
         };
-
 
         var colors = [
             '#EF5350', '#EC407A', '#AB47BC', '#29B6F6', '#7CB342', '#66BB6A', '#FFCA28', '#FF7043'

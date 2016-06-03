@@ -20,14 +20,24 @@
 				</header>
 			</md-toolbar>-->
 			<section ng-controller="CalendarDemoCtrl" ng-init="loadEvents()">
-				<!--<section layout="row">
-					<div class="md-padding">
-						<md-button flex class="md-raised md-accent" ng-class="{'md-small': $mdMedia('xs')}" ng-click="today()" ng-disabled="isToday()">Hoje</md-button>
-					</div>
-				</section>-->
+				<section layout="row" class="md-padding">
+					<md-button class="md-raised md-accent"
+							   ng-class="{'md-small': $mdMedia('xs')}"
+							   ng-click="today()"
+							   ng-disabled="isToday()">Hoje
+					</md-button>
+					<md-button ng-class="{'md-small': $mdMedia('xs')}"
+							   ng-click="showPins = !showPins">show Pins
+					</md-button>
+					<md-button ng-class="{'md-small': $mdMedia('xs')}"
+							   ng-click="showEventList = !showEventList">show Event List
+					</md-button>
+				</section>
+				{{currentDate}}
 				<calendar ng-model="currentDate"
 						  event-source="eventSource"
-						  show-events-list="true"
+						  show-event-list="showEventList"
+						  show-event-pins="showPins"
 						  range-changed="reloadSource(startTime, endTime)"
 						  event-selected="onEventSelected(event)"
 						  time-selected="onTimeSelected(selectedTime)"></calendar>
