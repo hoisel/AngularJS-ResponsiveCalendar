@@ -66,20 +66,17 @@ angular.module('ui.rCalendar', [])
 
 
         self.moveMonth = function (step) {
+            var year = self.currentCalendarDate.getFullYear();
+            var month = self.currentCalendarDate.getMonth() + step;
+            var date = self.currentCalendarDate.getDate();
+            var newDate = new Date(year, month, date);
+            var firstDayInNextMonth = new Date(year, month + 1, 1);
 
-            var currentCalendarDate = self.currentCalendarDate,
-                year = currentCalendarDate.getFullYear(),
-                month = currentCalendarDate.getMonth() + step,
-                date = currentCalendarDate.getDate(),
-                firstDayInNextMonth;
-
-            currentCalendarDate.setFullYear(year, month, date);
-            firstDayInNextMonth = new Date(year, month + 1, 1);
-            if (firstDayInNextMonth.getTime() <= currentCalendarDate.getTime()) {
-                self.currentCalendarDate = new Date(firstDayInNextMonth - 24 * 60 * 60 * 1000);
+            if (firstDayInNextMonth.getTime() <= newDate.getTime()) {
+                newDate = new Date(firstDayInNextMonth - 24 * 60 * 60 * 1000);
             }
 
-            ngModelCtrl.$setViewValue(self.currentCalendarDate);
+            ngModelCtrl.$setViewValue(newDate);
 
             refreshView();
         };
@@ -91,8 +88,8 @@ angular.module('ui.rCalendar', [])
                 month = currentCalendarDate.getMonth(),
                 date = currentCalendarDate.getDate() + step;
 
-            currentCalendarDate.setFullYear(year, month, date);
-            ngModelCtrl.$setViewValue(self.currentCalendarDate);
+            ngModelCtrl.$setViewValue( new Date(year, month, date));
+
             refreshView();
         };
 
@@ -100,12 +97,12 @@ angular.module('ui.rCalendar', [])
         self.select = function(selectedDate) {
             var weeks =  self.weeks;
             if (weeks) {
-                var currentCalendarDate = self.currentCalendarDate;
-                var currentMonth = currentCalendarDate.getMonth();
-                var currentYear = currentCalendarDate.getFullYear();
+                var currentMonth = self.currentCalendarDate.getMonth();
+                var currentYear = self.currentCalendarDate.getFullYear();
                 var selectedMonth = selectedDate.getMonth();
                 var selectedYear = selectedDate.getFullYear();
                 var direction = 0;
+                
                 if (currentYear === selectedYear) {
                     if (currentMonth !== selectedMonth) {
                         direction = currentMonth < selectedMonth ? 1 : -1;
@@ -113,8 +110,6 @@ angular.module('ui.rCalendar', [])
                 } else {
                     direction = currentYear < selectedYear ? 1 : -1;
                 }
-
-                self.currentCalendarDate = selectedDate;
 
                 if (ngModelCtrl) {
                     ngModelCtrl.$setViewValue(selectedDate);
