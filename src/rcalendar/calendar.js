@@ -16,6 +16,48 @@ angular.module('ui.rCalendar', [])
         var self = this;
         var ngModelCtrl = {$setViewValue: angular.noop}; // nullModelCtrl;
 
+
+        // attach metadata to each day
+        function attachDaysMetadata(days, month) {
+            for ( var i = 0; i < 42; i++ ) {
+                angular.extend( days[ i ], createDayMetadata( days[ i ] ), {
+                    secondary: days[ i ].getMonth() !== month
+                } );
+            }
+        }
+
+        function createDayMetadata(day) {
+            return {
+                label: dateFilter(day, self.formatDay),
+                headerLabel: dateFilter(day,self.formatDayHeader),
+                selected: self.compare(day, self.currentCalendarDate) === 0,
+                current: self.compare(day, new Date()) === 0
+            };
+        }
+
+        function createDaysLabels( days ) {
+            var labels = new Array(7);
+            for (var j = 0; j < 7; j++) {
+                labels[j] = dateFilter(days[j], self.formatDayHeader);
+            }
+            return labels;
+        }
+
+        function generateNDaysFrom(startDate, n) {
+            var days = new Array(n);
+            var current = new Date(startDate);
+            var i = 0;
+
+            current.setHours(12); // Prevent repeated dates because of timezone bug
+
+            while (i < n) {
+                days[i++] = new Date(current);
+                current.setDate(current.getDate() + 1);
+            }
+            return days;
+        }
+
+
         // Configuration attributes
         angular.forEach(['formatDay',
             'formatDayHeader',
@@ -31,7 +73,8 @@ angular.module('ui.rCalendar', [])
                 self[key] = angular.isDefined($attrs[key]) ? (index < 7 ? $interpolate($attrs[key])($scope.$parent) : $scope.$parent.$eval($attrs[key])) : calendarConfig[key];
             });
 
-        $scope.$mdMedia = $mdMedia;
+        self.$mdMedia = $mdMedia;
+
         $scope.$parent.$watch($attrs.eventSource, function (value) {
             self.onEventSourceChanged(value);
         });
@@ -92,45 +135,7 @@ angular.module('ui.rCalendar', [])
             this.refreshView();
         };*/
 
-        // attach metadata to each day
-        function attachDaysMetadata(days, month) {
-            for ( var i = 0; i < 42; i++ ) {
-                angular.extend( days[ i ], createDayMetadata( days[ i ] ), {
-                    secondary: days[ i ].getMonth() !== month
-                } );
-            }
-        }
 
-        function createDayMetadata(day) {
-            return {
-                label: dateFilter(day, self.formatDay),
-                headerLabel: dateFilter(day,self.formatDayHeader),
-                selected: self.compare(day, self.currentCalendarDate) === 0,
-                current: self.compare(day, new Date()) === 0
-            };
-        }
-
-        function createDaysLabels( days ) {
-            var labels = new Array(7);
-            for (var j = 0; j < 7; j++) {
-                labels[j] = dateFilter(days[j], self.formatDayHeader);
-            }
-            return labels;
-        }
-
-        function generateNDaysFrom(startDate, n) {
-            var days = new Array(n);
-            var current = new Date(startDate);
-            var i = 0;
-
-            current.setHours(12); // Prevent repeated dates because of timezone bug
-
-            while (i < n) {
-                days[i++] = new Date(current);
-                current.setDate(current.getDate() + 1);
-            }
-            return days;
-        }
 
         self.refreshView = function () {
             if (this.mode) {
@@ -146,9 +151,9 @@ angular.module('ui.rCalendar', [])
 
                 attachDaysMetadata(days, month);
 
-                $scope.labels = createDaysLabels(days);
-                $scope.title = dateFilter(headerDate, self.formatMonthTitle);
-                $scope.weeks = self.split(days, 7);
+                self.labels = createDaysLabels(days);
+                self.title = dateFilter(headerDate, self.formatMonthTitle);
+                self.weeks = self.split(days, 7);
 
                 this.viewRefreshed();
             }
@@ -171,7 +176,7 @@ angular.module('ui.rCalendar', [])
             }
         };
 
-        $scope.moveMonth = function (step) {
+        self.moveMonth = function (step) {
 
             var currentCalendarDate = self.currentCalendarDate,
                 year = currentCalendarDate.getFullYear(),
@@ -190,7 +195,7 @@ angular.module('ui.rCalendar', [])
             self.refreshView();
         };
 
-        $scope.moveDay = function (step) {
+        self.moveDay = function (step) {
             var currentCalendarDate = self.currentCalendarDate,
                 year = currentCalendarDate.getFullYear(),
                 month = currentCalendarDate.getMonth(),
@@ -225,8 +230,8 @@ angular.module('ui.rCalendar', [])
             return (event1.startTime.getTime() - event2.startTime.getTime());
         }
 
-        $scope.select = function(selectedDate) {
-            var weeks =  $scope.weeks;
+        self.select = function(selectedDate) {
+            var weeks =  self.weeks;
             if (weeks) {
                 var currentCalendarDate = self.currentCalendarDate;
                 var currentMonth = currentCalendarDate.getMonth();
@@ -253,7 +258,7 @@ angular.module('ui.rCalendar', [])
                             var selected = self.compare(selectedDate, weeks[row][date]) === 0;
                             weeks[row][date].selected = selected;
                             if (selected) {
-                                $scope.selectedDate = weeks[row][date];
+                                self.selectedDate = weeks[row][date];
                             }
                         }
                     }
@@ -276,7 +281,7 @@ angular.module('ui.rCalendar', [])
                 len = events ? events.length : 0,
                 startTime = self.range.startTime,
                 endTime = self.range.endTime,
-                weeks =  $scope.weeks,
+                weeks =  self.weeks,
                 oneDay = 86400000,
                 eps = 0.001,
                 row,
@@ -395,8 +400,8 @@ angular.module('ui.rCalendar', [])
             restrict: 'EA',
             replace: true,
             templateUrl: 'template/rcalendar/calendar.html',
-           /* scope: true,*/
-            /*controllerAs: 'ctrl',*/
+            bindToController: true,
+            controllerAs: 'ctrl',
             scope: {
                 viewRefreshed: '&',
                 eventSelected: '&',
