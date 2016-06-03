@@ -123,6 +123,8 @@ angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
 
         $scope.showEventList = true;
 
+        $scope.initDate = new Date(2010,5,1);
+
         $scope.changeMode = function( mode ) {
             $scope.mode = mode;
         };
@@ -134,8 +136,6 @@ angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
         $scope.isToday = function() {
             var today = new Date();
             var currentCalendarDate = new Date( $scope.currentDate );
-
-            //console.log( $scope.currentDate );
 
             today.setHours( 0, 0, 0, 0 );
             currentCalendarDate.setHours( 0, 0, 0, 0 );
@@ -158,28 +158,6 @@ angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
             '#EF5350', '#EC407A', '#AB47BC', '#29B6F6', '#7CB342', '#66BB6A', '#FFCA28', '#FF7043'
         ];
 
-        /*var colors = [
-            '#F44336', '#EC407A', '#1565C0', '#00695C', '#AFB42B', '#FFC400', '#6D4C41'
-        ];*/
-        /*var colors = [
-            '#F44336', '#EC407A', '#1565C0', '#00695C', '#AFB42B', '#FFC400', '#6D4C41'
-        ];*/
-
-        /*var colors = [
-         '#F44336',  '#00695C', '#6D4C41'
-         ];
-         */
-        /*var colors = [
-         '#C86673', '#cf7984', '#c15362', '#eac4c9'
-         ];*/
-
-        /*var colors = [
-         '#C86673','#ff8333','#18687f'
-         ];*/
-
-        /* var colors = [
-         '#C86673','#18687f'
-         ];*/
         function createRandomEvents() {
             var events = [];
             for ( var i = 0; i < 550; i += 1 ) {
@@ -202,7 +180,6 @@ angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
                     allDay: false,
                     color: color
                 } );
-                //}
             }
             return events;
         }
