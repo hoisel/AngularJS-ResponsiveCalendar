@@ -50,17 +50,36 @@ angular.module('ui.rCalendar', [])
             }
         }
 
+
         self.init = function (ngModelCtrl_) {
             ngModelCtrl = ngModelCtrl_;
 
+            ngModelCtrl.$parsers.push(self.validateDate);
+
             ngModelCtrl.$render = function () {
-                self.render();
+                self.refreshView();
             };
         };
 
-        self.render = function () {
-            if (ngModelCtrl.$modelValue) {
-                var date = new Date(ngModelCtrl.$modelValue),
+
+        self.validateDate = function($viewValue) {
+            var date = new Date($viewValue);
+            var isValid = !isNaN(date);
+
+            if (isValid) {
+                this.currentCalendarDate = date;
+            } else {
+                $log.error('"ng-model" value must be a Date object, a number of milliseconds since 01.01.1970 or a string representing an RFC2822 or ISO 8601 date.');
+            }
+            ngModelCtrl.$setValidity('date', isValid);
+
+            return $viewValue;
+        };
+
+
+        /*self.render = function () {
+            if (ngModelCtrl.$viewValue) {
+                var date = new Date(ngModelCtrl.$viewValue),
                     isValid = !isNaN(date);
 
                 if (isValid) {
@@ -71,7 +90,7 @@ angular.module('ui.rCalendar', [])
                 ngModelCtrl.$setValidity('date', isValid);
             }
             this.refreshView();
-        };
+        };*/
 
         // attach metadata to each day
         function attachDaysMetadata(days, month) {
