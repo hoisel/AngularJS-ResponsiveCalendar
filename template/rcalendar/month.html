@@ -89,7 +89,7 @@
 			</md-card>
 		</div>
 		<md-card id="day-events"
-				 ng-if="showEventsList && selectedDate.events"
+				 ng-if="showEventsList"
 				 flex
 				 md-swipe-left='moveDay(1)'
 				 md-swipe-right='moveDay(-1)'
@@ -110,6 +110,9 @@
 			</md-card-header>
 			<md-divider></md-divider>
 			<md-card-content>
+				<div ng-if="!selectedDate.events">
+					<p>Nenhum evento encontrado</p>
+				</div>
 				<div class="event-inner md-whiteframe-2dp md-padding"
 					 ng-repeat="event in selectedDate.events track by $index"
 					 ng-style="{'background-color': event.color}">

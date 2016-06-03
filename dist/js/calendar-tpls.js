@@ -576,7 +576,7 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "			</md-card>\n" +
     "		</div>\n" +
     "		<md-card id=\"day-events\"\n" +
-    "				 ng-if=\"showEventsList && selectedDate.events\"\n" +
+    "				 ng-if=\"showEventsList\"\n" +
     "				 flex\n" +
     "				 md-swipe-left='moveDay(1)'\n" +
     "				 md-swipe-right='moveDay(-1)'\n" +
@@ -597,6 +597,9 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "			</md-card-header>\n" +
     "			<md-divider></md-divider>\n" +
     "			<md-card-content>\n" +
+    "				<div ng-if=\"!selectedDate.events\">\n" +
+    "					<p>Nenhum evento encontrado</p>\n" +
+    "				</div>\n" +
     "				<div class=\"event-inner md-whiteframe-2dp md-padding\"\n" +
     "					 ng-repeat=\"event in selectedDate.events track by $index\"\n" +
     "					 ng-style=\"{'background-color': event.color}\">\n" +

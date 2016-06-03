@@ -27,6 +27,7 @@
 				</section>-->
 				<calendar ng-model="currentDate"
 						  event-source="eventSource"
+						  show-events-list="true"
 						  range-changed="reloadSource(startTime, endTime)"
 						  event-selected="onEventSelected(event)"
 						  time-selected="onTimeSelected(selectedTime)"></calendar>
