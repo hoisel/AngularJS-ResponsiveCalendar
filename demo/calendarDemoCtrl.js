@@ -147,16 +147,45 @@ angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
             console.log( 'Selected time: ' + selectedTime );
         };
 
+
+        var colors = [
+            '#EF5350', '#EC407A', '#AB47BC', '#29B6F6', '#7CB342', '#66BB6A', '#FFCA28', '#FF7043'
+        ];
+
+        /*var colors = [
+            '#F44336', '#EC407A', '#1565C0', '#00695C', '#AFB42B', '#FFC400', '#6D4C41'
+        ];*/
+        /*var colors = [
+            '#F44336', '#EC407A', '#1565C0', '#00695C', '#AFB42B', '#FFC400', '#6D4C41'
+        ];*/
+
+        /*var colors = [
+         '#F44336',  '#00695C', '#6D4C41'
+         ];
+         */
+        /*var colors = [
+         '#C86673', '#cf7984', '#c15362', '#eac4c9'
+         ];*/
+
+        /*var colors = [
+         '#C86673','#ff8333','#18687f'
+         ];*/
+
+        /* var colors = [
+         '#C86673','#18687f'
+         ];*/
         function createRandomEvents() {
             var events = [];
-            for ( var i = 0; i < 350; i += 1 ) {
+            for ( var i = 0; i < 550; i += 1 ) {
                 var date = new Date();
                 var startDay = Math.floor( Math.random() * 90 ) - 25;
                 var endDay = Math.floor( Math.random() * 3 ) + startDay;
+                var color = colors[ Math.floor( Math.random() * ( (colors.length - 1) - 0 + 1) ) ];
                 var startTime;
                 var endTime;
                 var startMinute = Math.floor( Math.random() * 24 * 60 );
                 var endMinute = Math.floor( Math.random() * 180 ) + startMinute;
+
                 startTime = new Date( date.getFullYear(), date.getMonth(), date.getDate() + startDay, 0, date.getMinutes() + startMinute );
                 endTime = new Date( date.getFullYear(), date.getMonth(), date.getDate() + endDay, 0, date.getMinutes() + endMinute );
                 events.push( {
@@ -164,7 +193,8 @@ angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
                     description: 'Long story short, though, its much improved by using dedicated click handlers, setting a ngModel if desired, taking all kinds of labels',
                     startTime: startTime,
                     endTime: endTime,
-                    allDay: false
+                    allDay: false,
+                    color: color
                 } );
                 //}
             }

@@ -423,7 +423,7 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
 angular.module("template/rcalendar/calendar.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/rcalendar/calendar.html",
     "<div layout=\"column\" ng-cloak>\n" +
-    "	<md-toolbar sticky offset=\"0\" sticky-class=\"fixed\">\n" +
+    "	<!--<md-toolbar sticky offset=\"0\" sticky-class=\"fixed\">\n" +
     "		<div class='md-toolbar-tools' layout='row'>\n" +
     "			<md-button class=\"md-icon-button\" ng-click=\"moveMonth(-1)\" aria-label=\"Mês anterior\">\n" +
     "				<md-icon md-svg-icon=\"md-tabs-arrow\">«</md-icon>\n" +
@@ -436,7 +436,7 @@ angular.module("template/rcalendar/calendar.html", []).run(["$templateCache", fu
     "				<md-icon md-svg-icon=\"md-tabs-arrow\" class=\"moveNext\"></md-icon>\n" +
     "			</md-button>\n" +
     "		</div>\n" +
-    "	</md-toolbar>\n" +
+    "	</md-toolbar>-->\n" +
     "	<div>\n" +
     "		<monthview></monthview>\n" +
     "	</div>\n" +
@@ -485,103 +485,127 @@ angular.module("template/rcalendar/day.html", []).run(["$templateCache", functio
 
 angular.module("template/rcalendar/month.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/rcalendar/month.html",
-    "<div class=\"md-padding month-view\">\n" +
+    "<div class=\"month-view\">\n" +
     "	<div layout=\"column\" layout-gt-sm=\"row\">\n" +
-    "		<div flex\n" +
-    "			 flex-gt-sm=\"60\"\n" +
-    "			 flex-gt-lg=\"80\"\n" +
-    "			 md-swipe-left='moveMonth(1)' md-swipe-right='moveMonth(-1)'>\n" +
-    "			<md-grid-list md-cols=\"7\"\n" +
-    "						  md-row-height=\"3:1\"\n" +
-    "						  md-gutter=\"0px\">\n" +
-    "				<md-grid-tile md-rowspan=\"1\"\n" +
-    "							  md-colspan=\"1\"\n" +
-    "							  ng-repeat=\"label in labels track by $index\">\n" +
-    "					<small style=\"font-weight: bold;\">{{label}}</small>\n" +
-    "				</md-grid-tile>\n" +
-    "			</md-grid-list>\n" +
+    "		<div flex>\n" +
+    "			<md-card\n" +
+    "				id=\"calendar\"\n" +
+    "				sticky\n" +
+    "				offset=\"0\"\n" +
+    "				media-query=\"min-width: 960px\"\n" +
+    "				class=\"event-inner\"\n" +
+    "				md-swipe-left='moveMonth(1)'\n" +
+    "				md-swipe-right='moveMonth(-1)'>\n" +
+    "				<md-card-header layout='row'\n" +
+    "								layout-align=\"space-between center\"\n" +
+    "								sticky offset=\"0\"\n" +
+    "								media-query=\"max-width: 959px\"\n" +
+    "								sticky-class=\"sticked\">\n" +
+    "					<md-button\n" +
+    "						class=\"md-icon-button\"\n" +
+    "						ng-click=\"moveMonth(-1)\"\n" +
+    "						aria-label=\"Mês anterior\">\n" +
+    "						<md-icon md-svg-icon=\"md-tabs-arrow\">«</md-icon>\n" +
+    "					</md-button>\n" +
+    "					<div flex></div>\n" +
+    "					<h2 class=\"md-title\">\n" +
+    "						<span>{{title}}</span>\n" +
+    "					</h2>\n" +
+    "					<div flex></div>\n" +
+    "					<md-button\n" +
+    "						class=\"md-icon-button\"\n" +
+    "						ng-click=\"moveMonth(1)\"\n" +
+    "						aria-label=\"Mês seguinte\">\n" +
+    "						<md-icon md-svg-icon=\"md-tabs-arrow\" class=\"moveNext\"></md-icon>\n" +
+    "					</md-button>\n" +
     "\n" +
-    "			<md-grid-list md-cols=\"7\"\n" +
-    "						  md-row-height=\"1:1\"\n" +
-    "						  md-row-height-gt-xs=\"3:2\"\n" +
-    "						  md-gutter=\"0px\">\n" +
-    "				<md-grid-tile md-rowspan=\"1\"\n" +
-    "							  md-colspan=\"1\"\n" +
-    "							  ng-repeat=\"dt in weeks[0].concat(weeks[1])\n" +
+    "				</md-card-header>\n" +
+    "				<md-divider></md-divider>\n" +
+    "				<md-card-content>\n" +
+    "					<md-grid-list md-cols=\"7\"\n" +
+    "								  md-row-height=\"3:1\"\n" +
+    "								  md-gutter=\"0px\">\n" +
+    "						<md-grid-tile md-rowspan=\"1\"\n" +
+    "									  md-colspan=\"1\"\n" +
+    "									  style=\"background: #fff\"\n" +
+    "									  ng-repeat=\"label in labels track by $index\">\n" +
+    "							<small style=\"font-weight: bold;\">{{label}}</small>\n" +
+    "						</md-grid-tile>\n" +
+    "					</md-grid-list>\n" +
+    "\n" +
+    "					<md-grid-list md-cols=\"7\"\n" +
+    "								  md-row-height=\"1:1\"\n" +
+    "								  md-row-height-gt-xs=\"3:2\"\n" +
+    "								  md-gutter=\"0px\">\n" +
+    "						<md-grid-tile md-rowspan=\"1\"\n" +
+    "									  md-colspan=\"1\"\n" +
+    "									  ng-repeat=\"dt in weeks[0].concat(weeks[1])\n" +
     "					  						  .concat(weeks[2])\n" +
     "					  						  .concat(weeks[3])\n" +
     "					  						  .concat(weeks[4])\n" +
     "					  						  .concat(weeks[5]) track by dt\"\n" +
-    "							  ng-click=\"select(dt)\"\n" +
-    "							  class=\"monthview-dateCell\"\n" +
-    "							  ng-focus=\"focus = true;\"\n" +
-    "							  ng-blur=\"focus = false;\"\n" +
-    "							  ng-mouseleave=\"hover = false\"\n" +
-    "							  ng-mouseenter=\"hover = true\"\n" +
-    "							  ng-class=\"{\n" +
-    "					  			'md-whiteframe-12dp': hover || focus,\n" +
+    "									  ng-click=\"select(dt)\"\n" +
+    "									  class=\"monthview-dateCell\"\n" +
+    "									  ng-focus=\"focus = true;\"\n" +
+    "									  ng-blur=\"focus = false;\"\n" +
+    "									  ng-mouseleave=\"hover = false\"\n" +
+    "									  ng-mouseenter=\"hover = true\"\n" +
+    "									  ng-class=\"{\n" +
+    "					  			'md-whiteframe-8dp': hover || focus,\n" +
     "								'monthview-current': dt.current&&!dt.selected&&!dt.hasEvent,\n" +
     "								'monthview-secondary-with-event': dt.secondary&&dt.hasEvent,\n" +
     "								'monthview-secondary': dt.secondary,\n" +
     "								'monthview-selected': dt.selected,\n" +
     "								'lastDayOfWeek': (($index + 1) % 7) === 0\n" +
     "								}\">\n" +
-    "					<div ng-class=\"{'text-muted':dt.secondary}\">\n" +
-    "						<span class=\"date md-subheader\">\n" +
-    "							{{dt.label}}\n" +
-    "						</span>\n" +
-    "						<div ng-if=\"showEvents\"\n" +
-    "							 class=\"month-events\"\n" +
-    "							 ng-class=\"{ sm: $mdMedia('gt-xs'),  md: $mdMedia('gt-sm'), lg: $mdMedia('gt-md')}\">\n" +
-    "							<div class=\"month-event left\"\n" +
-    "								 md-colors=\"{background: 'primary-800'}\"\n" +
-    "								 ng-repeat=\"ev in dt.events track by ev.title\"></div>\n" +
-    "						</div>\n" +
-    "					</div>\n" +
-    "				</md-grid-tile>\n" +
-    "			</md-grid-list>\n" +
+    "							<div ng-class=\"{'text-muted':dt.secondary}\">\n" +
+    "								<span class=\"date md-subheader\">\n" +
+    "									{{dt.label}}\n" +
+    "								</span>\n" +
+    "								<div ng-if=\"showEvents\"\n" +
+    "									 class=\"month-events\"\n" +
+    "									 ng-class=\"{ sm: $mdMedia('gt-xs'),  md: $mdMedia('gt-sm'), lg: $mdMedia('gt-md')}\">\n" +
+    "									<div class=\"month-event-pin left\"\n" +
+    "										 ng-style=\"{'background-color': ev.color}\"\n" +
+    "										 ng-repeat=\"ev in dt.events | orderBy : 'color' track by ev.title\"></div>\n" +
+    "								</div>\n" +
+    "							</div>\n" +
+    "						</md-grid-tile>\n" +
+    "					</md-grid-list>\n" +
+    "				</md-card-content>\n" +
+    "			</md-card>\n" +
     "		</div>\n" +
-    "\n" +
-    "		<md-list id=\"day-events\"\n" +
+    "		<md-card id=\"day-events\"\n" +
     "				 ng-if=\"showEventsList && selectedDate.events\"\n" +
     "				 flex\n" +
-    "				 flex-gt-sm=\"40\"\n" +
-    "				 flex-gt-lg=\"20\"\n" +
     "				 md-swipe-left='moveDay(1)'\n" +
     "				 md-swipe-right='moveDay(-1)'\n" +
+    "				 class=\"event-inner\"\n" +
     "				 ng-class=\"{ md: $mdMedia('gt-sm')}\">\n" +
-    "\n" +
-    "			<md-list-item layout=\"row\"\n" +
-    "						  layout-gt-sm=\"column\"\n" +
-    "						  layout-align=\"start stretch\"\n" +
-    "						  class=\"event\">\n" +
-    "				<div flex=\"15\"\n" +
-    "					 flex-gt-sm=\"100\"\n" +
-    "					 md-colors=\"{color: 'accent'}\"\n" +
-    "					 class=\"event-date-wrapper\">\n" +
-    "					<div hide show-gt-sm>\n" +
-    "						<div class=\"event-date\">{{selectedDate|date: 'dd EEE' }}</div>\n" +
-    "					</div>\n" +
-    "					<div hide-gt-sm\n" +
-    "						 sticky\n" +
-    "						 offset=\"60\"\n" +
-    "						 sticky-class=\"fixed\">\n" +
-    "						<div class=\"event-date\">{{selectedDate|date: 'dd' }}</div>\n" +
-    "						<div class=\"md-body-2\">{{selectedDate.headerLabel}}</div>\n" +
-    "					</div>\n" +
+    "			<md-card-header layout='row'\n" +
+    "							layout-align=\"space-between center\" sticky\n" +
+    "							offset=\"55\"\n" +
+    "							media-query=\"max-width: 959px\"\n" +
+    "							sticky-class=\"sticked\">\n" +
+    "				<md-card-header-text\n" +
+    "					layout\n" +
+    "					layout-align=\"center\"\n" +
+    "					layout-align-gt-sm=\"start\">\n" +
+    "					<span class=\"md-title\">{{selectedDate|date: 'dd' }}</span>\n" +
+    "					<span class=\"md-subhead\">{{selectedDate|date: 'EEEE'}}</span>\n" +
+    "				</md-card-header-text>\n" +
+    "			</md-card-header>\n" +
+    "			<md-divider></md-divider>\n" +
+    "			<md-card-content>\n" +
+    "				<div class=\"event-inner md-whiteframe-2dp md-padding\"\n" +
+    "					 ng-repeat=\"event in selectedDate.events track by $index\"\n" +
+    "					 ng-style=\"{'background-color': event.color}\">\n" +
+    "					<div class=\"md-body-2\">\n" +
+    "						<strong>{{event.title}}</strong></div>\n" +
+    "					<div class=\"md-body-2\">{{event.startTime|date: formatHourColumn}} - {{event.endTime|date: formatHourColumn}}</div>\n" +
     "				</div>\n" +
-    "\n" +
-    "				<div layout=\"column\"\n" +
-    "					 flex=\"85\" flex-gt-sm=\"100\">\n" +
-    "					<div class=\"event-inner\"\n" +
-    "						 ng-repeat=\"event in selectedDate.events track by $index\"\n" +
-    "						 md-colors=\"{background: 'primary-600'}\">\n" +
-    "						<div class=\"md-body-2\"><strong>{{event.title}}</strong></div>\n" +
-    "						<div class=\"md-body-2\">{{event.startTime|date: formatHourColumn}} - {{event.endTime|date: formatHourColumn}}</div>\n" +
-    "					</div>\n" +
-    "				</div>\n" +
-    "			</md-list-item>\n" +
-    "		</md-list>\n" +
+    "			</md-card-content>\n" +
+    "		</md-card>\n" +
     "	</div>\n" +
     "</div>");
 }]);

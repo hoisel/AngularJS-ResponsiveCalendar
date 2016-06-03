@@ -11,20 +11,20 @@
 	</head>
 	<body>
 		<div>
-			<md-toolbar>
+			<!--<md-toolbar>
 				<header layout="column" class="md-padding">
 					<div class="md-title">
 						AngularJS Responsive Calendar
 					</div>
 					<div class="md-subhead">A pure AngularJS responsive calendar directive</div>
 				</header>
-			</md-toolbar>
+			</md-toolbar>-->
 			<section ng-controller="CalendarDemoCtrl" ng-init="loadEvents()">
-				<section layout="row">
+				<!--<section layout="row">
 					<div class="md-padding">
 						<md-button flex class="md-raised md-accent" ng-class="{'md-small': $mdMedia('xs')}" ng-click="today()" ng-disabled="isToday()">Hoje</md-button>
 					</div>
-				</section>
+				</section>-->
 				<calendar ng-model="currentDate"
 						  event-source="eventSource"
 						  range-changed="reloadSource(startTime, endTime)"
