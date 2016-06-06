@@ -7,8 +7,8 @@
 				offset="0"
 				media-query="min-width: 960px"
 				class="event-inner"
-				md-swipe-left='moveMonth(1)'
-				md-swipe-right='moveMonth(-1)'>
+				md-swipe-left='ctrl.moveMonth(1)'
+				md-swipe-right='ctrl.moveMonth(-1)'>
 				<md-card-header layout='row'
 								layout-align="space-between center"
 								sticky offset="0"
@@ -16,18 +16,18 @@
 								sticky-class="sticked">
 					<md-button
 						class="md-icon-button"
-						ng-click="moveMonth(-1)"
+						ng-click="ctrl.moveMonth(-1)"
 						aria-label="Mês anterior">
 						<md-icon md-svg-icon="md-tabs-arrow">«</md-icon>
 					</md-button>
 					<div flex></div>
 					<h2 class="md-title">
-						<span>{{title}}</span>
+						<span>{{ctrl.title}}</span>
 					</h2>
 					<div flex></div>
 					<md-button
 						class="md-icon-button"
-						ng-click="moveMonth(1)"
+						ng-click="ctrl.moveMonth(1)"
 						aria-label="Mês seguinte">
 						<md-icon md-svg-icon="md-tabs-arrow" class="moveNext"></md-icon>
 					</md-button>
@@ -40,7 +40,7 @@
 						<md-grid-tile md-rowspan="1"
 									  md-colspan="1"
 									  style="background: #fff"
-									  ng-repeat="label in labels track by $index">
+									  ng-repeat="label in ctrl.labels track by $index">
 							<small style="font-weight: bold;">{{label}}</small>
 						</md-grid-tile>
 					</md-grid-list>
@@ -51,12 +51,12 @@
 								  md-gutter="0px">
 						<md-grid-tile md-rowspan="1"
 									  md-colspan="1"
-									  ng-repeat="dt in weeks[0].concat(weeks[1])
-																	.concat(weeks[2])
-																	.concat(weeks[3])
-																	.concat(weeks[4])
-																	.concat(weeks[5]) track by dt"
-									  ng-click="select(dt)"
+									  ng-repeat="dt in ctrl.weeks[0].concat(ctrl.weeks[1])
+																	.concat(ctrl.weeks[2])
+																	.concat(ctrl.weeks[3])
+																	.concat(ctrl.weeks[4])
+																	.concat(ctrl.weeks[5]) track by dt"
+									  ng-click="ctrl.select(dt)"
 									  class="monthview-dateCell"
 									  ng-focus="focus = true;"
 									  ng-blur="focus = false;"
@@ -74,11 +74,11 @@
 								<span class="date md-subheader">
 									{{dt.label}}
 								</span>
-								<div ng-if="showEventPins"
+								<div ng-if="ctrl.showEventPins"
 									 class="month-events"
-									 ng-class="{ sm: $mdMedia('gt-xs'),
-												 md: $mdMedia('gt-sm'),
-												 lg: $mdMedia('gt-md')}">
+									 ng-class="{ sm: ctrl.$mdMedia('gt-xs'),
+												 md: ctrl.$mdMedia('gt-sm'),
+												 lg: ctrl.$mdMedia('gt-md')}">
 									<div class="month-event-pin left"
 										 ng-style="{'background-color': event.color}"
 										 ng-repeat="event in dt.events | orderBy : 'color' track by event.title"></div>
@@ -90,12 +90,12 @@
 			</md-card>
 		</div>
 		<md-card id="day-events"
-				 ng-if="showEventList"
+				 ng-if="ctrl.showEventList"
 				 flex
-				 md-swipe-left='moveDay(1)'
-				 md-swipe-right='moveDay(-1)'
+				 md-swipe-left='ctrl.moveDay(1)'
+				 md-swipe-right='ctrl.moveDay(-1)'
 				 class="event-inner"
-				 ng-class="{ md: $mdMedia('gt-sm')}">
+				 ng-class="{ md: ctrl.$mdMedia('gt-sm')}">
 			<md-card-header layout='row'
 							layout-align="space-between center"
 							sticky
@@ -106,21 +106,21 @@
 					layout
 					layout-align="center"
 					layout-align-gt-sm="start">
-					<span class="md-title">{{selectedDate|date: 'dd' }}</span>
-					<span class="md-subhead">{{selectedDate|date: 'EEEE'}}</span>
+					<span class="md-title">{{ctrl.selectedDate|date: 'dd' }}</span>
+					<span class="md-subhead">{{ctrl.selectedDate|date: 'EEEE'}}</span>
 				</md-card-header-text>
 			</md-card-header>
 			<md-divider></md-divider>
 			<md-card-content>
-				<div ng-if="!selectedDate.events">
+				<div ng-if="!ctrl.selectedDate.events">
 					<p>Nenhum evento encontrado</p>
 				</div>
 				<div class="event-inner md-whiteframe-2dp md-padding"
-					 ng-repeat="event in selectedDate.events track by $index"
+					 ng-repeat="event in ctrl.selectedDate.events track by $index"
 					 ng-style="{'background-color': event.color}">
 					<div class="md-body-2">
 						<strong>{{event.title}}</strong></div>
-					<div class="md-body-2">{{event.startTime|date: formatHourColumn}} - {{event.endTime|date: formatHourColumn}}</div>
+					<div class="md-body-2">{{event.startTime|date: ctrl.formatHourColumn}} - {{event.endTime|date: ctrl.formatHourColumn}}</div>
 				</div>
 			</md-card-content>
 		</md-card>
