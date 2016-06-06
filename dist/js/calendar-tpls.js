@@ -84,10 +84,10 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
 
 
         self.moveDay = function (step) {
-            var currentCalendarDate = self.currentCalendarDate,
-                year = currentCalendarDate.getFullYear(),
-                month = currentCalendarDate.getMonth(),
-                date = currentCalendarDate.getDate() + step;
+            var currentCalendarDate = self.currentCalendarDate;
+            var year = currentCalendarDate.getFullYear();
+            var month = currentCalendarDate.getMonth();
+            var date = currentCalendarDate.getDate() + step;
 
             ngModelCtrl.$setViewValue( new Date(year, month, date));
 
@@ -97,12 +97,21 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
 
         self.select = function(selectedDate) {
             var weeks =  self.weeks;
+            var currentMonth;
+            var currentYear;
+            var selectedMonth;
+            var selectedYear;
+            var direction;
+            var selected;
+            var row;
+            var date;
+
             if (weeks) {
-                var currentMonth = self.currentCalendarDate.getMonth();
-                var currentYear = self.currentCalendarDate.getFullYear();
-                var selectedMonth = selectedDate.getMonth();
-                var selectedYear = selectedDate.getFullYear();
-                var direction = 0;
+                currentMonth = self.currentCalendarDate.getMonth();
+                currentYear = self.currentCalendarDate.getFullYear();
+                selectedMonth = selectedDate.getMonth();
+                selectedYear = selectedDate.getFullYear();
+                direction = 0;
                 
                 if (currentYear === selectedYear) {
                     if (currentMonth !== selectedMonth) {
@@ -116,9 +125,9 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
                     ngModelCtrl.$setViewValue(selectedDate);
                 }
                 if (direction === 0) {
-                    for (var row = 0; row < 6; row += 1) {
-                        for (var date = 0; date < 7; date += 1) {
-                            var selected = compare(selectedDate, weeks[row][date]) === 0;
+                    for (row = 0; row < 6; row += 1) {
+                        for (date = 0; date < 7; date += 1) {
+                            selected = compare(selectedDate, weeks[row][date]) === 0;
                             weeks[row][date].selected = selected;
                             if (selected) {
                                 self.selectedDate = weeks[row][date];
@@ -145,16 +154,17 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
         /////////////////////////////////////////////////////////////////////
 
         function onDataLoaded() {
-            var events = self.eventSource,
-                len = events ? events.length : 0,
-                startTime = self.range.startTime,
-                endTime = self.range.endTime,
-                weeks =  self.weeks,
-                oneDay = 86400000,
-                eps = 0.001,
-                row,
-                date,
-                hasEvent = false;
+            var events = self.eventSource;
+            var len = events ? events.length : 0;
+            var startTime = self.range.startTime;
+            var endTime = self.range.endTime;
+            var weeks =  self.weeks;
+            var oneDay = 86400000;
+            var eps = 0.001;
+            var row;
+            var date;
+            var hasEvent = false;
+            var findSelected = false;
 
             if (weeks.hasEvent) {
                 for (row = 0; row < 6; row += 1) {
@@ -223,7 +233,6 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
             }
             weeks.hasEvent = hasEvent;
 
-            var findSelected = false;
             for (row = 0; row < 6; row += 1) {
                 for (date = 0; date < 7; date += 1) {
                     if (weeks[row][date].selected) {

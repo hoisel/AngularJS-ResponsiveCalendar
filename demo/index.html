@@ -9,8 +9,7 @@
 		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.css">
 		<link rel="stylesheet" href="../dist/css/calendar.min.css"/>
 	</head>
-	<body>
-		<div>
+	<body ng-controller="CalendarDemoCtrl" ng-init="loadEvents()" style="margin-top: 30px;">
 			<!--<md-toolbar>
 				<header layout="column" class="md-padding">
 					<div class="md-title">
@@ -19,7 +18,7 @@
 					<div class="md-subhead">A pure AngularJS responsive calendar directive</div>
 				</header>
 			</md-toolbar>-->
-			<section ng-controller="CalendarDemoCtrl" ng-init="loadEvents()">
+			<section >
 				<section layout="row" class="md-padding">
 					<md-button class="md-raised md-accent"
 							   ng-class="{'md-small': $mdMedia('xs')}"
@@ -54,6 +53,5 @@
 			<script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc4/angular-material.min.js"></script>
 			<script src="../dist/js/calendar-tpls.js"></script>
 			<script src="calendarDemoCtrl.js"></script>
-		</div>
 	</body>
 </html>
