@@ -32,12 +32,6 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
             self.onEventSourceChanged(value);
         });
 
-        if (!self.currentCalendarDate) {
-            self.currentCalendarDate = new Date();
-            if ($attrs.ngModel && !$scope.$parent.$eval($attrs.ngModel)) {
-                $parse($attrs.ngModel).assign($scope.$parent, self.currentCalendarDate);
-            }
-        }
         self.$mdMedia = $mdMedia;
 
         /**
@@ -502,6 +496,7 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
             templateUrl: 'template/rcalendar/month.html'
         };
     });
+
 angular.module("template/rcalendar/calendar.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/rcalendar/calendar.html",
     "<div layout=\"column\" ng-cloak>\n" +
@@ -624,7 +619,7 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "																	.concat(ctrl.weeks[2])\n" +
     "																	.concat(ctrl.weeks[3])\n" +
     "																	.concat(ctrl.weeks[4])\n" +
-    "																	.concat(ctrl.weeks[5]) track by dt\"\n" +
+    "																	.concat(ctrl.weeks[5]) track by $index\"\n" +
     "									  ng-click=\"ctrl.select(dt)\"\n" +
     "									  class=\"monthview-dateCell\"\n" +
     "									  ng-focus=\"focus = true;\"\n" +
@@ -650,7 +645,7 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "												 lg: ctrl.$mdMedia('gt-md')}\">\n" +
     "									<div class=\"month-event-pin left\"\n" +
     "										 ng-style=\"{'background-color': event.color}\"\n" +
-    "										 ng-repeat=\"event in dt.events | orderBy : 'color' track by event.title\"></div>\n" +
+    "										 ng-repeat=\"event in dt.events | orderBy : 'color' track by $index\"></div>\n" +
     "								</div>\n" +
     "							</div>\n" +
     "						</md-grid-tile>\n" +

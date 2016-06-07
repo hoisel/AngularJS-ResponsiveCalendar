@@ -55,7 +55,7 @@
 																	.concat(ctrl.weeks[2])
 																	.concat(ctrl.weeks[3])
 																	.concat(ctrl.weeks[4])
-																	.concat(ctrl.weeks[5]) track by dt"
+																	.concat(ctrl.weeks[5]) track by $index"
 									  ng-click="ctrl.select(dt)"
 									  class="monthview-dateCell"
 									  ng-focus="focus = true;"
@@ -81,7 +81,7 @@
 												 lg: ctrl.$mdMedia('gt-md')}">
 									<div class="month-event-pin left"
 										 ng-style="{'background-color': event.color}"
-										 ng-repeat="event in dt.events | orderBy : 'color' track by event.title"></div>
+										 ng-repeat="event in dt.events | orderBy : 'color' track by $index"></div>
 								</div>
 							</div>
 						</md-grid-tile>
