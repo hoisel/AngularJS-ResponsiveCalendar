@@ -1,4 +1,4 @@
-angular.module( 'ui.rCalendar.tpls', ["template/rcalendar/calendar.html","template/rcalendar/month.html"]);
+angular.module( 'ui.rCalendar.tpls', ["template/rcalendar/calendar.html"]);
 angular.module( 'ui.rCalendar', [ 'ui.rCalendar.tpls' ] );
 angular.module( 'ui.rCalendar' )
        .constant( 'calendarConfig', {
@@ -13,12 +13,62 @@ angular.module( 'ui.rCalendar' )
        } );
 
 angular.module( 'ui.rCalendar' )
+       .directive( 'calendar', function calendarDirective() {
+           'use strict';
+           return {
+               restrict: 'EA',
+               replace: true,
+               templateUrl: 'template/rcalendar/calendar.html',
+               bindToController: true,
+               controllerAs: 'vm',
+               scope: {
+                   viewRefreshed: '&',
+                   eventSelected: '&',
+                   timeSelected: '&',
+                   showEventList: '=',
+                   showEventPins: '='
+               },
+               require: [ 'calendar', '?^ngModel' ],
+               controller: 'ui.rCalendar.CalendarController',
+               link: function( scope, element, attrs, ctrls ) {
+                   var vm = ctrls[ 0 ];
+                   var ngModelCtrl = ctrls[ 1 ];
+
+                   if ( ngModelCtrl ) {
+                       vm.init( ngModelCtrl );
+                   }
+
+                   scope.$on( 'changeDate', function( event, direction ) {
+                       vm.move( direction );
+                   } );
+
+                   scope.$on( 'eventSourceChanged', function( event, value ) {
+                       vm.onEventSourceChanged( value );
+                   } );
+               }
+           };
+       } );
+
+
+angular.module( 'ui.rCalendar' )
        .controller( 'ui.rCalendar.CalendarController', CalendarController );
 
 CalendarController.$inject = [
     '$scope', '$attrs', '$interpolate', '$log', '$mdMedia', 'dateFilter', 'calendarConfig'
 ];
 
+/**
+ * Calendar directive controller
+ *
+ * @param {Object} $scope -  angular $scope service
+ * @param {Object} $attrs -  angular $attrs service
+ * @param {Object} $interpolate -  angular $interpolate service
+ * @param {Object} $log -  angular $log service
+ * @param {Object} $mdMedia -  angular-material $mdMedia service
+ * @param {Object} dateFilter -  angular dateFilter filter
+ * @param {Object} calendarConfig -  calendar config
+ * @constructor
+ */
 function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateFilter, calendarConfig ) {
     'use strict';
     var vm = this;
@@ -45,13 +95,21 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     vm.$mdMedia = $mdMedia;
 
     /**
+     * Initialize the calendar
      *
-     * @param ngModelCtrl_
+     * @param {Object} ngModelCtrl_ - angular ngModel directive controller
+     *
+     * @returns {void}
      */
     vm.init = function( ngModelCtrl_ ) {
         ngModelCtrl = ngModelCtrl_;
         ngModelCtrl.$formatters.push( validateDate );
 
+        /**
+         * Copy model value to local scope and render the calendar
+         *
+         * @returns {void}
+         */
         ngModelCtrl.$render = function() {
             vm._selectedDate = ngModelCtrl.$viewValue || new Date();
             refreshView();
@@ -59,19 +117,25 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     };
 
     /**
+     * Event triggered on event source changed
      *
-     * @param value
+     * @param {Object} eventSource - the new event source
+     *
+     * @returns {void}
      */
-    vm.onEventSourceChanged = function( value ) {
-        vm.eventSource = value;
+    vm.onEventSourceChanged = function( eventSource ) {
+        vm.eventSource = eventSource;
         if ( onDataLoaded ) {
             onDataLoaded();
         }
     };
 
     /**
+     * Change selected month
      *
-     * @param step
+     * @param {Number} step -
+     *
+     * @returns {void}
      */
     vm.moveMonth = function( step ) {
         var year = vm._selectedDate.getFullYear();
@@ -91,8 +155,11 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     };
 
     /**
+     * Change selected day
      *
-     * @param step
+     * @param {Number} step -
+     *
+     * @returns {void}
      */
     vm.moveDay = function( step ) {
         var _selectedDate = vm._selectedDate;
@@ -108,8 +175,11 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     };
 
     /**
+     * Select a new date
      *
-     * @param selectedDate
+     * @param {Date} selectedDate - the choosen date
+     *
+     * @returns {void}
      */
     vm.select = function( selectedDate ) {
         var weeks = vm.weeks;
@@ -170,7 +240,10 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     /////////////////////////////////////////////////////////////////////
 
     /**
+     * Event called when view is refreshed and query mode is local (data is available locally).
+     * Fills event data on every date and change the selected date.
      *
+     * @returns {void}
      */
     function onDataLoaded() {
         var events = vm.eventSource;
@@ -275,7 +348,9 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     }
 
     /**
+     * Event called when view is refreshed.
      *
+     * @returns {void}
      */
     function onViewRefreshed() {
         if ( vm.queryMode === 'local' ) {
@@ -293,9 +368,12 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     }
 
     /**
-     * Attach metadata to each day
-     * @param days
-     * @param month
+     * Attach metadata to each date.
+     *
+     * @param {Array} days - javascript date array
+     * @param {Number} month - day's month
+     *
+     * @returns {void}
      */
     function attachDaysMetadata( days, month ) {
         var i;
@@ -308,8 +386,9 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
 
     /**
      * Create day metadata used by view
-     * @param day
-     * @returns {{label: *, headerLabel: *, selected: boolean, current: boolean}}
+     *
+     * @param {Date} day - javascript date
+     * @returns {{label: *, headerLabel: *, selected: boolean, current: boolean}} - day metadata
      */
     function createDayMetadata( day ) {
         return {
@@ -323,8 +402,8 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     /**
      * Create labels for calendar days header
      *
-     * @param days
-     * @returns {Array}
+     * @param {Array} days - javascript date array
+     * @returns {Array<String>} - array with days names
      */
     function createDaysLabels( days ) {
         var labels = new Array( 7 );
@@ -338,8 +417,8 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     /**
      * Generates n sequential dates from 'startDate'
      *
-     * @param startDate - the start date
-     * @param n - number de dates to generate from 'startDate'
+     * @param {Date} startDate - the start date
+     * @param {Number} n - number de dates to generate from 'startDate'
      * @returns {Array} - The generated dates
      */
     function generateNDaysFrom( startDate, n ) {
@@ -357,9 +436,10 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     }
 
     /**
+     * Validate model date
      *
-     * @param $viewValue
-     * @returns {null}
+     * @param {Object} $viewValue - angular $viewMode
+     * @returns {Object} - returns $viewValue if it is a valida date, or null otherwise
      */
     function validateDate( $viewValue ) {
         var date = new Date( $viewValue );
@@ -375,10 +455,12 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     }
 
     /**
+     * Compare 2 dates
      *
-     * @param date1
-     * @param date2
-     * @returns {number}
+     * @param {Date} date1 - javascript date
+     * @param {Date} date2 - javascript date
+     *
+     * @returns {number} - 0 if date are equal. Otherwise, returns a number different from 0
      */
     function compare( date1, date2 ) {
         return ( new Date( date1.getFullYear(), date1.getMonth(), date1.getDate() ) - new Date( date2.getFullYear(), date2.getMonth(), date2.getDate() ) );
@@ -387,8 +469,9 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     /**
      * Compare two events. Two events are equal if its startTime are equal
      *
-     * @param event1
-     * @param event2
+     * @param {Object} event1 - event
+     * @param {Object} event2 - event
+     *
      * @returns {number} - 0 if events are equal. Other number if are not equal
      */
     function compareEvent( event1, event2 ) {
@@ -432,9 +515,10 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     /**
      * Split array into smaller arrays
      *
-     * @param arr
-     * @param size
-     * @returns {Array}
+     * @param {Array} arr - array to split
+     * @param {Number} size - length of resulting arrays
+     *
+     * @returns {Array} - Array of arrays
      */
     function split( arr, size ) {
         var arrays = [];
@@ -447,8 +531,9 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     /**
      * Generate calendar date range from current date
      *
-     * @param currentDate
-     * @returns {{startTime: Date, endTime: Date}}
+     * @param {Date} currentDate - current date
+     *
+     * @returns {{startTime: Date, endTime: Date}} - date range
      */
     function getRange( currentDate ) {
         var year = currentDate.getFullYear();
@@ -473,142 +558,74 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     }
 }
 
-angular.module( 'ui.rCalendar' )
-       .directive( 'calendar', function calendar() {
-           'use strict';
-           return {
-               restrict: 'EA',
-               replace: true,
-               templateUrl: 'template/rcalendar/calendar.html',
-               bindToController: true,
-               controllerAs: 'vm',
-               scope: {
-                   viewRefreshed: '&',
-                   eventSelected: '&',
-                   timeSelected: '&',
-                   showEventList: '=',
-                   showEventPins: '='
-               },
-               require: [ 'calendar', '?^ngModel' ],
-               controller: 'ui.rCalendar.CalendarController',
-               link: function( scope, element, attrs, ctrls ) {
-                   var vm = ctrls[ 0 ];
-                   var ngModelCtrl = ctrls[ 1 ];
-
-                   if ( ngModelCtrl ) {
-                       vm.init( ngModelCtrl );
-                   }
-
-                   scope.$on( 'changeDate', function( event, direction ) {
-                       vm.move( direction );
-                   } );
-
-                   scope.$on( 'eventSourceChanged', function( event, value ) {
-                       vm.onEventSourceChanged( value );
-                   } );
-               }
-           };
-       } )
-       .directive( 'monthview', function monthView() {
-           'use strict';
-           return {
-               restrict: 'EA',
-               replace: true,
-               templateUrl: 'template/rcalendar/month.html'
-           };
-       } );
-
 angular.module("template/rcalendar/calendar.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/rcalendar/calendar.html",
     "<div layout=\"column\" ng-cloak>\n" +
-    "	<!--<md-toolbar sticky offset=\"0\" sticky-class=\"fixed\">\n" +
-    "		<div class='md-toolbar-tools' layout='row'>\n" +
-    "			<md-button class=\"md-icon-button\" ng-click=\"moveMonth(-1)\" aria-label=\"Mês anterior\">\n" +
-    "				<md-icon md-svg-icon=\"md-tabs-arrow\">«</md-icon>\n" +
-    "			</md-button>\n" +
-    "			<div flex></div>\n" +
-    "			<h2 class='calendar-md-title'>\n" +
-    "				<span>{{title}}</span></h2>\n" +
-    "			<div flex></div>\n" +
-    "			<md-button class=\"md-icon-button\" ng-click=\"moveMonth(1)\" aria-label=\"Mês seguinte\">\n" +
-    "				<md-icon md-svg-icon=\"md-tabs-arrow\" class=\"moveNext\"></md-icon>\n" +
-    "			</md-button>\n" +
-    "		</div>\n" +
-    "	</md-toolbar>-->\n" +
-    "	<div>\n" +
-    "		<monthview></monthview>\n" +
-    "	</div>\n" +
-    "</div>\n" +
-    "");
-}]);
-
-angular.module("template/rcalendar/month.html", []).run(["$templateCache", function($templateCache) {
-  $templateCache.put("template/rcalendar/month.html",
-    "<div class=\"month-view\">\n" +
-    "	<div layout=\"column\" layout-gt-sm=\"row\">\n" +
-    "		<div flex>\n" +
-    "			<md-card\n" +
-    "				id=\"calendar\"\n" +
-    "				sticky\n" +
-    "				offset=\"0\"\n" +
-    "				media-query=\"min-width: 960px\"\n" +
-    "				class=\"event-inner\"\n" +
-    "				md-swipe-left='vm.moveMonth(1)'\n" +
-    "				md-swipe-right='vm.moveMonth(-1)'>\n" +
-    "				<md-card-header layout='row'\n" +
-    "								layout-align=\"space-between center\"\n" +
-    "								sticky offset=\"0\"\n" +
-    "								media-query=\"max-width: 959px\"\n" +
-    "								sticky-class=\"sticked\">\n" +
-    "					<md-button\n" +
-    "						class=\"md-icon-button\"\n" +
-    "						ng-click=\"vm.moveMonth(-1)\"\n" +
-    "						aria-label=\"Mês anterior\">\n" +
-    "						<md-icon md-svg-icon=\"md-tabs-arrow\">«</md-icon>\n" +
-    "					</md-button>\n" +
-    "					<div flex></div>\n" +
-    "					<h2 class=\"md-title\">\n" +
-    "						<span>{{vm.title}}</span>\n" +
-    "					</h2>\n" +
-    "					<div flex></div>\n" +
-    "					<md-button\n" +
-    "						class=\"md-icon-button\"\n" +
-    "						ng-click=\"vm.moveMonth(1)\"\n" +
-    "						aria-label=\"Mês seguinte\">\n" +
-    "						<md-icon md-svg-icon=\"md-tabs-arrow\" class=\"moveNext\"></md-icon>\n" +
-    "					</md-button>\n" +
-    "				</md-card-header>\n" +
-    "				<md-divider></md-divider>\n" +
-    "				<md-card-content>\n" +
-    "					<md-grid-list md-cols=\"7\"\n" +
-    "								  md-row-height=\"3:1\"\n" +
-    "								  md-gutter=\"0px\">\n" +
-    "						<md-grid-tile md-rowspan=\"1\"\n" +
-    "									  md-colspan=\"1\"\n" +
-    "									  style=\"background: #fff\"\n" +
-    "									  ng-repeat=\"label in vm.labels track by $index\">\n" +
-    "							<small style=\"font-weight: bold;\">{{label}}</small>\n" +
-    "						</md-grid-tile>\n" +
-    "					</md-grid-list>\n" +
+    "	<div class=\"month-view\">\n" +
+    "		<div layout=\"column\" layout-gt-sm=\"row\">\n" +
+    "			<div flex>\n" +
+    "				<md-card\n" +
+    "					id=\"calendar\"\n" +
+    "					sticky\n" +
+    "					offset=\"0\"\n" +
+    "					media-query=\"min-width: 960px\"\n" +
+    "					class=\"event-inner\"\n" +
+    "					md-swipe-left='vm.moveMonth(1)'\n" +
+    "					md-swipe-right='vm.moveMonth(-1)'>\n" +
+    "					<md-card-header layout='row'\n" +
+    "									layout-align=\"space-between center\"\n" +
+    "									sticky offset=\"0\"\n" +
+    "									media-query=\"max-width: 959px\"\n" +
+    "									sticky-class=\"sticked\">\n" +
+    "						<md-button\n" +
+    "							class=\"md-icon-button\"\n" +
+    "							ng-click=\"vm.moveMonth(-1)\"\n" +
+    "							aria-label=\"Mês anterior\">\n" +
+    "							<md-icon md-svg-icon=\"md-tabs-arrow\">«</md-icon>\n" +
+    "						</md-button>\n" +
+    "						<div flex></div>\n" +
+    "						<h2 class=\"md-title\">\n" +
+    "							<span>{{vm.title}}</span>\n" +
+    "						</h2>\n" +
+    "						<div flex></div>\n" +
+    "						<md-button\n" +
+    "							class=\"md-icon-button\"\n" +
+    "							ng-click=\"vm.moveMonth(1)\"\n" +
+    "							aria-label=\"Mês seguinte\">\n" +
+    "							<md-icon md-svg-icon=\"md-tabs-arrow\" class=\"moveNext\"></md-icon>\n" +
+    "						</md-button>\n" +
+    "					</md-card-header>\n" +
+    "					<md-divider></md-divider>\n" +
+    "					<md-card-content>\n" +
+    "						<md-grid-list md-cols=\"7\"\n" +
+    "									  md-row-height=\"3:1\"\n" +
+    "									  md-gutter=\"0px\">\n" +
+    "							<md-grid-tile md-rowspan=\"1\"\n" +
+    "										  md-colspan=\"1\"\n" +
+    "										  style=\"background: #fff\"\n" +
+    "										  ng-repeat=\"label in vm.labels track by $index\">\n" +
+    "								<small style=\"font-weight: bold;\">{{label}}</small>\n" +
+    "							</md-grid-tile>\n" +
+    "						</md-grid-list>\n" +
     "\n" +
-    "					<md-grid-list md-cols=\"7\"\n" +
-    "								  md-row-height=\"1:1\"\n" +
-    "								  md-row-height-gt-xs=\"3:2\"\n" +
-    "								  md-gutter=\"0px\">\n" +
-    "						<md-grid-tile md-rowspan=\"1\"\n" +
-    "									  md-colspan=\"1\"\n" +
-    "									  ng-repeat=\"dt in vm.weeks[0].concat(vm.weeks[1])\n" +
+    "						<md-grid-list md-cols=\"7\"\n" +
+    "									  md-row-height=\"1:1\"\n" +
+    "									  md-row-height-gt-xs=\"3:2\"\n" +
+    "									  md-gutter=\"0px\">\n" +
+    "							<md-grid-tile md-rowspan=\"1\"\n" +
+    "										  md-colspan=\"1\"\n" +
+    "										  ng-repeat=\"dt in vm.weeks[0].concat(vm.weeks[1])\n" +
     "																	.concat(vm.weeks[2])\n" +
     "																	.concat(vm.weeks[3])\n" +
     "																	.concat(vm.weeks[4])\n" +
     "																	.concat(vm.weeks[5]) track by $index\"\n" +
-    "									  ng-click=\"vm.select(dt)\"\n" +
-    "									  class=\"monthview-dateCell\"\n" +
-    "									  ng-focus=\"focus = true;\"\n" +
-    "									  ng-blur=\"focus = false;\"\n" +
-    "									  ng-mouseleave=\"hover = false\"\n" +
-    "									  ng-mouseenter=\"hover = true\"\n" +
-    "									  ng-class=\"{\n" +
+    "										  ng-click=\"vm.select(dt)\"\n" +
+    "										  class=\"monthview-dateCell\"\n" +
+    "										  ng-focus=\"focus = true;\"\n" +
+    "										  ng-blur=\"focus = false;\"\n" +
+    "										  ng-mouseleave=\"hover = false\"\n" +
+    "										  ng-mouseenter=\"hover = true\"\n" +
+    "										  ng-class=\"{\n" +
     "					  			'md-whiteframe-8dp': hover || focus,\n" +
     "								'monthview-current': dt.current&&!dt.selected&&!dt.hasEvent,\n" +
     "								'monthview-secondary-with-event': dt.secondary&&dt.hasEvent,\n" +
@@ -616,60 +633,62 @@ angular.module("template/rcalendar/month.html", []).run(["$templateCache", funct
     "								'monthview-selected': dt.selected,\n" +
     "								'lastDayOfWeek': (($index + 1) % 7) === 0\n" +
     "								}\">\n" +
-    "							<div ng-class=\"{'text-muted':dt.secondary}\">\n" +
+    "								<div ng-class=\"{'text-muted':dt.secondary}\">\n" +
     "								<span class=\"date md-subheader\">\n" +
     "									{{dt.label}}\n" +
     "								</span>\n" +
-    "								<div ng-if=\"vm.showEventPins\"\n" +
-    "									 class=\"month-events\"\n" +
-    "									 ng-class=\"{ sm: vm.$mdMedia('gt-xs'),\n" +
+    "									<div ng-if=\"vm.showEventPins\"\n" +
+    "										 class=\"month-events\"\n" +
+    "										 ng-class=\"{ sm: vm.$mdMedia('gt-xs'),\n" +
     "												 md: vm.$mdMedia('gt-sm'),\n" +
     "												 lg: vm.$mdMedia('gt-md')}\">\n" +
-    "									<div class=\"month-event-pin left\"\n" +
-    "										 ng-style=\"{'background-color': event.color}\"\n" +
-    "										 ng-repeat=\"event in dt.events | orderBy : 'color' track by $index\"></div>\n" +
+    "										<div class=\"month-event-pin left\"\n" +
+    "											 ng-style=\"{'background-color': event.color}\"\n" +
+    "											 ng-repeat=\"event in dt.events | orderBy : 'color' track by $index\"></div>\n" +
+    "									</div>\n" +
     "								</div>\n" +
-    "							</div>\n" +
-    "						</md-grid-tile>\n" +
-    "					</md-grid-list>\n" +
+    "							</md-grid-tile>\n" +
+    "						</md-grid-list>\n" +
+    "					</md-card-content>\n" +
+    "				</md-card>\n" +
+    "			</div>\n" +
+    "			<md-card id=\"day-events\"\n" +
+    "					 ng-if=\"vm.showEventList\"\n" +
+    "					 flex\n" +
+    "					 md-swipe-left='vm.moveDay(1)'\n" +
+    "					 md-swipe-right='vm.moveDay(-1)'\n" +
+    "					 class=\"event-inner\"\n" +
+    "					 ng-class=\"{ md: vm.$mdMedia('gt-sm')}\">\n" +
+    "				<md-card-header layout='row'\n" +
+    "								layout-align=\"space-between center\"\n" +
+    "								sticky\n" +
+    "								offset=\"55\"\n" +
+    "								media-query=\"max-width: 959px\"\n" +
+    "								sticky-class=\"sticked\">\n" +
+    "					<md-card-header-text\n" +
+    "						layout\n" +
+    "						layout-align=\"center\"\n" +
+    "						layout-align-gt-sm=\"start\">\n" +
+    "						<span class=\"md-title\">{{vm.selectedDate|date: vm.formatDay }}</span>\n" +
+    "						<span class=\"md-subhead\">{{vm.selectedDate|date: 'EEEE'}}</span>\n" +
+    "					</md-card-header-text>\n" +
+    "				</md-card-header>\n" +
+    "				<md-divider></md-divider>\n" +
+    "				<md-card-content>\n" +
+    "					<div ng-if=\"!vm.selectedDate.events\">\n" +
+    "						<p>Nenhum evento encontrado</p>\n" +
+    "					</div>\n" +
+    "					<div class=\"event-inner md-whiteframe-2dp md-padding\"\n" +
+    "						 ng-repeat=\"event in vm.selectedDate.events track by $index\"\n" +
+    "						 ng-style=\"{'background-color': event.color}\">\n" +
+    "						<div class=\"md-body-2\">\n" +
+    "							<strong>{{event.title}}</strong></div>\n" +
+    "						<div class=\"md-body-2\">{{event.startTime|date: vm.formatHourColumn}} - {{event.endTime|date: vm.formatHourColumn}}</div>\n" +
+    "					</div>\n" +
     "				</md-card-content>\n" +
     "			</md-card>\n" +
     "		</div>\n" +
-    "		<md-card id=\"day-events\"\n" +
-    "				 ng-if=\"vm.showEventList\"\n" +
-    "				 flex\n" +
-    "				 md-swipe-left='vm.moveDay(1)'\n" +
-    "				 md-swipe-right='vm.moveDay(-1)'\n" +
-    "				 class=\"event-inner\"\n" +
-    "				 ng-class=\"{ md: vm.$mdMedia('gt-sm')}\">\n" +
-    "			<md-card-header layout='row'\n" +
-    "							layout-align=\"space-between center\"\n" +
-    "							sticky\n" +
-    "							offset=\"55\"\n" +
-    "							media-query=\"max-width: 959px\"\n" +
-    "							sticky-class=\"sticked\">\n" +
-    "				<md-card-header-text\n" +
-    "					layout\n" +
-    "					layout-align=\"center\"\n" +
-    "					layout-align-gt-sm=\"start\">\n" +
-    "					<span class=\"md-title\">{{vm.selectedDate|date: vm.formatDay }}</span>\n" +
-    "					<span class=\"md-subhead\">{{vm.selectedDate|date: 'EEEE'}}</span>\n" +
-    "				</md-card-header-text>\n" +
-    "			</md-card-header>\n" +
-    "			<md-divider></md-divider>\n" +
-    "			<md-card-content>\n" +
-    "				<div ng-if=\"!vm.selectedDate.events\">\n" +
-    "					<p>Nenhum evento encontrado</p>\n" +
-    "				</div>\n" +
-    "				<div class=\"event-inner md-whiteframe-2dp md-padding\"\n" +
-    "					 ng-repeat=\"event in vm.selectedDate.events track by $index\"\n" +
-    "					 ng-style=\"{'background-color': event.color}\">\n" +
-    "					<div class=\"md-body-2\">\n" +
-    "						<strong>{{event.title}}</strong></div>\n" +
-    "					<div class=\"md-body-2\">{{event.startTime|date: vm.formatHourColumn}} - {{event.endTime|date: vm.formatHourColumn}}</div>\n" +
-    "				</div>\n" +
-    "			</md-card-content>\n" +
-    "		</md-card>\n" +
     "	</div>\n" +
-    "</div>");
+    "</div>\n" +
+    "");
 }]);

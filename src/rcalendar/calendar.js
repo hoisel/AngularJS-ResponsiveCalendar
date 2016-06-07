@@ -48,14 +48,6 @@ angular.module( 'ui.rCalendar' )
            };
        } );
 
-angular.module( 'ui.rCalendar' ).directive( 'monthview', function monthDirective() {
-    'use strict';
-    return {
-        restrict: 'EA',
-        replace: true,
-        templateUrl: 'template/rcalendar/month.html'
-    };
-} );
 
 angular.module( 'ui.rCalendar' )
        .controller( 'ui.rCalendar.CalendarController', CalendarController );
