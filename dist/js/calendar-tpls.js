@@ -4,9 +4,7 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
         formatDay: 'dd',
         formatDayHeader: 'EEE',
         formatDayTitle: 'MMMM dd, yyyy',
-        formatWeekTitle: 'MMMM yyyy, Week w',
         formatMonthTitle: 'MMMM yyyy',
-        formatWeekViewDayHeader: 'EEE d',
         formatHourColumn: 'dd \'de\' MMMM, HH:mm',
         startingDay: 0,
         eventSource: null,
@@ -21,9 +19,7 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
         angular.forEach(['formatDay',
             'formatDayHeader',
             'formatDayTitle',
-            'formatWeekTitle',
             'formatMonthTitle',
-            'formatWeekViewDayHeader',
             'formatHourColumn',
             'startingDay',
             'eventSource',
@@ -36,15 +32,13 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
             self.onEventSourceChanged(value);
         });
 
+        if (!self.currentCalendarDate) {
+            self.currentCalendarDate = new Date();
+            if ($attrs.ngModel && !$scope.$parent.$eval($attrs.ngModel)) {
+                $parse($attrs.ngModel).assign($scope.$parent, self.currentCalendarDate);
+            }
+        }
         self.$mdMedia = $mdMedia;
-
-        /**
-         *
-         * @returns {boolean|*}
-         */
-        self.isValid = function(  ) {
-            return ngModelCtrl.$valid;
-        };
 
         /**
          *
