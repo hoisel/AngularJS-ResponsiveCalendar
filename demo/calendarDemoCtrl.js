@@ -118,17 +118,18 @@ angular.module( 'calendarDemoApp' ).config( [
 angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
     '$scope', function( $scope ) {
         'use strict';
+        
         $scope.currentDate = new Date();
         $scope.showPins = true;
         $scope.showEventList = true;
+        $scope.queryModel = 'local';
 
         $scope.initDate = new Date(2016,5,1);
 
         $scope.changeMode = function( mode ) {
             $scope.mode = mode;
         };
-        //$scope.currentDate = new Date(2016,5,10);
-        //$scope.currentDate = 's';
+
         $scope.today = function() {
             $scope.currentDate = new Date();
         };
@@ -136,6 +137,12 @@ angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
         $scope.randomDate = function() {
             $scope.currentDate = new Date(2016,5,23);
         };
+
+        /*$scope.reloadSource = function(selectedDate) {
+            $scope.eventSource = allEvents.filter(function(e) {
+                return e.startTime.getDate() === selectedDate.getDate();
+            });
+        };*/
 
         $scope.isToday = function() {
             var today = new Date();
@@ -147,7 +154,7 @@ angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
         };
 
         $scope.loadEvents = function() {
-            $scope.eventSource = createRandomEvents();
+            $scope.eventSource = allEvents;
         };
 
         $scope.onEventSelected = function( event ) {
@@ -163,6 +170,9 @@ angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
         ];
 
         function createRandomEvents() {
+
+            console.log('createRandomEvents');
+
             var events = [];
             for ( var i = 0; i < 550; i += 1 ) {
                 var date = new Date();
@@ -187,5 +197,7 @@ angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
             }
             return events;
         }
+
+        var allEvents = createRandomEvents();
     }
 ] );

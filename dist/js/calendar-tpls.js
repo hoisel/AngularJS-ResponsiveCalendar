@@ -278,10 +278,10 @@ angular.module('ui.rCalendar', ['ui.rCalendar.tpls'])
                     onDataLoaded();
                 }
             } else if (self.queryMode === 'remote') {
-                if (onViewRefreshed) {
-                    onViewRefreshed({
-                        startTime: self.range.startTime,
-                        endTime: self.range.endTime
+                if (self.viewRefreshed) {
+                    self.viewRefreshed({
+                        selectedDate: self._selectedDate,
+                        range: self.range
                     });
                 }
             }
