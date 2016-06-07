@@ -122,7 +122,7 @@ angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
         $scope.showPins = true;
         $scope.showEventList = true;
 
-        $scope.initDate = new Date(2010,5,1);
+        $scope.initDate = new Date(2016,5,1);
 
         $scope.changeMode = function( mode ) {
             $scope.mode = mode;

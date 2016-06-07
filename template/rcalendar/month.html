@@ -1,6 +1,5 @@
 <div class="month-view">
 	<div layout="column" layout-gt-sm="row">
-		{{ctrl.valid()}}
 		<div flex>
 			<md-card
 				id="calendar"
@@ -107,7 +106,7 @@
 					layout
 					layout-align="center"
 					layout-align-gt-sm="start">
-					<span class="md-title">{{ctrl.selectedDate|date: 'dd' }}</span>
+					<span class="md-title">{{ctrl.selectedDate|date: ctrl.formatDay }}</span>
 					<span class="md-subhead">{{ctrl.selectedDate|date: 'EEEE'}}</span>
 				</md-card-header-text>
 			</md-card-header>
@@ -125,5 +124,5 @@
 				</div>
 			</md-card-content>
 		</md-card>
-	</div ng-show>
+	</div>
 </div>

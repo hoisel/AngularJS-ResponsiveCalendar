@@ -15,7 +15,6 @@ angular.module('ui.rCalendar', [])
         'use strict';
         var self = this;
         var ngModelCtrl = {$setViewValue: angular.noop}; // nullModelCtrl;
-        var initDate = new Date();
 
         // Configuration attributes
         angular.forEach(['formatDay',
@@ -36,25 +35,34 @@ angular.module('ui.rCalendar', [])
             self.onEventSourceChanged(value);
         });
 
-        if (angular.isDefined($attrs.initDate)) {
-            initDate = $scope.$parent.$eval($attrs.initDate);
-        }
         self.$mdMedia = $mdMedia;
 
+        /**
+         *
+         * @returns {boolean|*}
+         */
         self.isValid = function(  ) {
             return ngModelCtrl.$valid;
         };
 
+        /**
+         *
+         * @param ngModelCtrl_
+         */
         self.init = function (ngModelCtrl_) {
             ngModelCtrl = ngModelCtrl_;
             ngModelCtrl.$formatters.push(validateDate);
 
             ngModelCtrl.$render = function () {
-                self._selectedDate = ngModelCtrl.$viewValue || initDate || new Date();
+                self._selectedDate = ngModelCtrl.$viewValue || new Date();
                 refreshView();
             };
         };
 
+        /**
+         *
+         * @param value
+         */
         self.onEventSourceChanged = function (value) {
             self.eventSource = value;
             if (onDataLoaded) {
@@ -62,7 +70,10 @@ angular.module('ui.rCalendar', [])
             }
         };
 
-
+        /**
+         *
+         * @param step
+         */
         self.moveMonth = function (step) {
             var year = self._selectedDate.getFullYear();
             var month = self._selectedDate.getMonth() + step;
@@ -80,7 +91,10 @@ angular.module('ui.rCalendar', [])
             refreshView();
         };
 
-
+        /**
+         *
+         * @param step
+         */
         self.moveDay = function (step) {
             var _selectedDate = self._selectedDate;
             var year = _selectedDate.getFullYear();
@@ -94,7 +108,10 @@ angular.module('ui.rCalendar', [])
             refreshView();
         };
 
-
+        /**
+         *
+         * @param selectedDate
+         */
         self.select = function(selectedDate) {
             var weeks =  self.weeks;
             var currentMonth;
@@ -154,6 +171,9 @@ angular.module('ui.rCalendar', [])
         // Private members
         /////////////////////////////////////////////////////////////////////
 
+        /**
+         *
+         */
         function onDataLoaded() {
             var events = self.eventSource;
             var len = events ? events.length : 0;
@@ -248,7 +268,9 @@ angular.module('ui.rCalendar', [])
             }
         }
 
-
+        /**
+         *
+         */
         function onViewRefreshed() {
             if (self.queryMode === 'local') {
                 if (self.eventSource && onDataLoaded) {
@@ -264,8 +286,11 @@ angular.module('ui.rCalendar', [])
             }
         }
 
-
-        // attach metadata to each day
+        /**
+         * Attach metadata to each day
+         * @param days
+         * @param month
+         */
         function attachDaysMetadata(days, month) {
             for ( var i = 0; i < 42; i++ ) {
                 angular.extend( days[ i ], createDayMetadata( days[ i ] ), {
@@ -274,7 +299,11 @@ angular.module('ui.rCalendar', [])
             }
         }
 
-
+        /**
+         * Create day metadata used by view
+         * @param day
+         * @returns {{label: *, headerLabel: *, selected: boolean, current: boolean}}
+         */
         function createDayMetadata(day) {
             return {
                 label: dateFilter(day, self.formatDay),
@@ -284,7 +313,12 @@ angular.module('ui.rCalendar', [])
             };
         }
 
-
+        /**
+         * Create labels for calendar days header
+         *
+         * @param days
+         * @returns {Array}
+         */
         function createDaysLabels( days ) {
             var labels = new Array(7);
             for (var j = 0; j < 7; j++) {
@@ -293,7 +327,13 @@ angular.module('ui.rCalendar', [])
             return labels;
         }
 
-
+        /**
+         * Generates n sequential dates from 'startDate'
+         *
+         * @param startDate - the start date
+         * @param n - number de dates to generate from 'startDate'
+         * @returns {Array} - The generated dates
+         */
         function generateNDaysFrom(startDate, n) {
             var days = new Array(n);
             var current = new Date(startDate);
@@ -308,7 +348,11 @@ angular.module('ui.rCalendar', [])
             return days;
         }
 
-
+        /**
+         *
+         * @param $viewValue
+         * @returns {null}
+         */
         function validateDate($viewValue) {
             var date = new Date($viewValue);
             var isValid = !isNaN(date);
@@ -322,17 +366,32 @@ angular.module('ui.rCalendar', [])
             return isValid ? $viewValue : null;
         }
 
-
+        /**
+         *
+         * @param date1
+         * @param date2
+         * @returns {number}
+         */
         function compare(date1, date2) {
             return (new Date(date1.getFullYear(), date1.getMonth(), date1.getDate()) - new Date(date2.getFullYear(), date2.getMonth(), date2.getDate()) );
         }
 
-
+        /**
+         * Compare two events. Two events are equal if its startTime are equal
+         *
+         * @param event1
+         * @param event2
+         * @returns {number} - 0 if events are equal. Other number if are not equal
+         */
         function compareEvent(event1, event2) {
             return (event1.startTime.getTime() - event2.startTime.getTime());
         }
 
-
+        /**
+         * Update local scope causing view refresh. Re-render calendar.
+         *
+         * @returns {void}
+         */
         function refreshView() {
             var startDate;
             var day;
@@ -362,8 +421,13 @@ angular.module('ui.rCalendar', [])
             }
         }
 
-
-        // Split array into smaller arrays
+        /**
+         * Split array into smaller arrays
+         *
+         * @param arr
+         * @param size
+         * @returns {Array}
+         */
         function split (arr, size) {
             var arrays = [];
             while (arr.length > 0) {
@@ -372,7 +436,12 @@ angular.module('ui.rCalendar', [])
             return arrays;
         }
 
-
+        /**
+         * Generate calendar date range from current date
+         *
+         * @param currentDate
+         * @returns {{startTime: Date, endTime: Date}}
+         */
         function getRange(currentDate) {
             var year = currentDate.getFullYear(),
                 month = currentDate.getMonth(),
