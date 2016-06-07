@@ -9,7 +9,7 @@
 		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.css">
 		<link rel="stylesheet" href="../dist/css/calendar.min.css"/>
 	</head>
-	<body ng-controller="CalendarDemoCtrl" ng-init="loadEvents()" style="margin-top: 30px;">
+	<body ng-controller="CalendarDemoController as vm" style="margin-top: 30px;">
 			<!--<md-toolbar>
 				<header layout="column" class="md-padding">
 					<div class="md-title">
@@ -18,33 +18,33 @@
 					<div class="md-subhead">A pure AngularJS responsive calendar directive</div>
 				</header>
 			</md-toolbar>-->
-			<section >
+			<section ng-init="vm.loadEvents()">
 				<section layout="row" class="md-padding">
 					<md-button class="md-raised md-accent"
 							   ng-class="{'md-small': $mdMedia('xs')}"
-							   ng-click="today()"
-							   ng-disabled="isToday()">Hoje
+							   ng-click="vm.today()"
+							   ng-disabled="vm.isToday()">Hoje
 					</md-button>
 					<md-button class="md-raised md-accent"
 							   ng-class="{'md-small': $mdMedia('xs')}"
-							   ng-click="loadEvents()">Refresh Events
+							   ng-click="vm.loadEvents()">Refresh Events
 					</md-button>
 					<md-button ng-class="{'md-small': $mdMedia('xs')}"
-							   ng-click="showPins = !showPins">show Pins
+							   ng-click="vm.showPins = !vm.showPins">show Pins
 					</md-button>
 					<md-button ng-class="{'md-small': $mdMedia('xs')}"
-							   ng-click="showEventList = !showEventList">show Event List
+							   ng-click="vm.showEventList = !vm.showEventList">show Event List
 					</md-button>
 				</section>
 
-				<calendar ng-model="currentDate"
-						  event-source="eventSource"
-						  show-event-list="showEventList"
-						  show-event-pins="showPins"
-						  query-mode="queryModel"
-						  view-refreshed="reloadSource(selectedDate, range)"
-						  event-selected="onEventSelected(event)"
-						  time-selected="onTimeSelected(selectedTime)"></calendar>
+				<calendar ng-model="vm.currentDate"
+						  event-source="vm.eventSource"
+						  show-event-list="vm.showEventList"
+						  show-event-pins="vm.showPins"
+						  query-mode="vm.queryModel"
+						  view-refreshed="vm.reloadSource(selectedDate, range)"
+						  event-selected="vm.onEventSelected(event)"
+						  time-selected="vm.onTimeSelected(selectedTime)"></calendar>
 			</section>
 
 			<!-- Angular Material requires Angular.js Libraries -->
