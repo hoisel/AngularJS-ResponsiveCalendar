@@ -8,8 +8,17 @@
 		<!-- Angular Material style sheet -->
 		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.css">
 		<link rel="stylesheet" href="../dist/css/calendar.min.css"/>
+
+		<style>
+			md-select {
+				margin: 0 26px 0 26px;
+			}
+			md-select.md-small {
+				margin: 0 5px;
+			}
+		</style>
 	</head>
-	<body ng-controller="CalendarDemoController as vm" style="margin-top: 30px;">
+	<body ng-controller="CalendarDemoController as vm" style="margin-top: 30px;"  ng-cloak>
 		<!--<md-toolbar>
 			<header layout="column" class="md-padding">
 				<div class="md-title">
@@ -25,12 +34,23 @@
 						   ng-click="vm.today()"
 						   ng-disabled="vm.isToday()">Hoje
 				</md-button>
-				<md-button ng-class="{'md-small': $mdMedia('xs')}"
-						   ng-click="vm.showPins = !vm.showPins">Exibir eventos
+				<md-button class="md-raised"
+						   ng-class="{'md-small': $mdMedia('xs')}"
+						   ng-click="vm.showPins = !vm.showPins">Eventos
 				</md-button>
-				<md-button ng-class="{'md-small': $mdMedia('xs')}"
-						   ng-click="vm.showEventList = !vm.showEventList">Exibir detalhes
+				<md-button class="md-raised"
+						   ng-class="{'md-small': $mdMedia('xs')}"
+						   ng-click="vm.showEventList = !vm.showEventList">Detalhes
 				</md-button>
+
+				<md-select ng-model="vm.selectedLocale"
+						   ng-class="{'md-small': $mdMedia('xs')}"
+						   ng-change="vm.changeLocale(vm.selectedLocale)"
+						   placeholder="Select a locale">
+					<md-option ng-value="opt.key" ng-repeat="opt in vm.availableLocales">
+						{{opt.name}}
+					</md-option>
+				</md-select>
 			</section>
 
 			<calendar ng-model="vm.currentDate"
@@ -52,7 +72,7 @@
 
 		<!-- Others -->
 		<script src="./sticky.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.5.6/angular-locale_pt-br.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-dynamic-locale/0.1.32/tmhDynamicLocale.min.js"></script>
 
 		<!-- Calendar-->
 		<script src="../dist/js/calendar-tpls.js"></script>

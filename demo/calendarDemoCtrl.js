@@ -1,6 +1,16 @@
-angular.module( 'calendarDemoApp', [ 'ui.rCalendar', 'ngMaterial', 'sticky' ] );
+angular.module( 'calendarDemoApp', [
+    'ui.rCalendar', 'ngMaterial', 'sticky', 'tmh.dynamicLocale'
+] );
 angular.module( 'calendarDemoApp' ).run( appRun );
 angular.module( 'calendarDemoApp' ).config( calendarConfig );
+angular.module( 'calendarDemoApp' ).config( localeConfig );
+
+localeConfig.$inject = [ 'tmhDynamicLocaleProvider' ];
+
+function localeConfig( tmhDynamicLocaleProvider ) {
+    tmhDynamicLocaleProvider.localeLocationPattern( 'https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.5.6/angular-locale_{{locale}}.js' );
+}
+
 angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoController', CalendarDemoController );
 
 appRun.$inject = [ '$rootScope', '$mdMedia' ];
@@ -132,7 +142,7 @@ function calendarConfig( $mdThemingProvider ) {
     $mdThemingProvider.setDefaultTheme( 'espm' );
 }
 
-CalendarDemoController.$inject = [ '$log' ];
+CalendarDemoController.$inject = [ '$log', 'tmhDynamicLocale' ];
 
 /**
  * Demo app controller
@@ -140,7 +150,7 @@ CalendarDemoController.$inject = [ '$log' ];
  * @param {Object} $log - angular $log service
  * @constructor
  */
-function CalendarDemoController( $log ) {
+function CalendarDemoController( $log, tmhDynamicLocale ) {
     'use strict';
 
     var vm = this;
@@ -149,10 +159,49 @@ function CalendarDemoController( $log ) {
     ];
     var allEvents = createRandomEvents();
 
+    vm.availableLocales = [
+        {
+            key: 'pt',
+            name: 'Português'
+        }, {
+            key: 'en',
+            name: 'English'
+        }, {
+            key: 'de',
+            name: 'German'
+        }, {
+            key: 'fr',
+            name: 'French'
+        }, {
+            key: 'ar',
+            name: 'Arabic'
+        }, {
+            key: 'ja',
+            name: 'Japanese'
+        }, {
+            key: 'ko',
+            name: 'Korean'
+        }, {
+            key: 'zh',
+            name: 'Chinese'
+        }, {
+            key: 'it',
+            name: 'Italiano'
+        }
+    ];
+    vm.selectedLocale = vm.availableLocales[ 0 ].key;
     vm.currentDate = new Date();
     vm.showPins = true;
     vm.showEventList = true;
     vm.queryModel = 'local';
+
+    vm.changeLocale = function( locale ) {
+        tmhDynamicLocale.set( locale ).then( function() {
+            vm.currentDate = new Date( vm.currentDate );
+        } );
+    };
+
+    vm.changeLocale( vm.selectedLocale );
 
     vm.changeMode = function( mode ) {
         vm.mode = mode;
