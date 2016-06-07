@@ -25,6 +25,10 @@
 							   ng-click="today()"
 							   ng-disabled="isToday()">Hoje
 					</md-button>
+					<md-button class="md-raised md-accent"
+							   ng-class="{'md-small': $mdMedia('xs')}"
+							   ng-click="loadEvents()">Refresh Events
+					</md-button>
 					<md-button ng-class="{'md-small': $mdMedia('xs')}"
 							   ng-click="showPins = !showPins">show Pins
 					</md-button>
@@ -37,7 +41,8 @@
 						  event-source="eventSource"
 						  show-event-list="showEventList"
 						  show-event-pins="showPins"
-						  range-changed="reloadSource(startTime, endTime)"
+						  query-mode="queryModel"
+						  view-refreshed="reloadSource(selectedDate, range)"
 						  event-selected="onEventSelected(event)"
 						  time-selected="onTimeSelected(selectedTime)"></calendar>
 			</section>
