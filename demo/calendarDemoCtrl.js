@@ -1,17 +1,31 @@
 angular.module( 'calendarDemoApp', [ 'ui.rCalendar', 'ngMaterial', 'sticky' ] );
-angular.module( 'calendarDemoApp' ).run( calendarRun );
+angular.module( 'calendarDemoApp' ).run( appRun );
 angular.module( 'calendarDemoApp' ).config( calendarConfig );
 angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoController', CalendarDemoController );
 
-calendarRun.$inject = [ '$rootScope', '$mdMedia' ];
+appRun.$inject = [ '$rootScope', '$mdMedia' ];
 
-function calendarRun( $rootScope, $mdMedia ) {
+/**
+ * Run phase configs
+ *
+ * @param {Object} $rootScope - angular $rootScope service
+ * @param {Object} $mdMedia - angular-material $mdMedia service
+ *
+ * @returns {void}
+ */
+function appRun( $rootScope, $mdMedia ) {
     'use strict';
     $rootScope.$mdMedia = $mdMedia;
 }
 
 calendarConfig.$inject = [ '$mdThemingProvider' ];
 
+/**
+ * Set app configurations
+ *
+ * @param {Object} $mdThemingProvider - angular-material $mdThemingProvider service
+ * @returns {void}
+ */
 function calendarConfig( $mdThemingProvider ) {
     'use strict';
 
@@ -120,6 +134,12 @@ function calendarConfig( $mdThemingProvider ) {
 
 CalendarDemoController.$inject = [ '$log' ];
 
+/**
+ * Demo app controller
+ *
+ * @param {Object} $log - angular $log service
+ * @constructor
+ */
 function CalendarDemoController( $log ) {
     'use strict';
 
@@ -173,6 +193,11 @@ function CalendarDemoController( $log ) {
         $log.info( 'Selected time: ' + selectedTime );
     };
 
+    /**
+     * Random events factory
+     *
+     * @returns {Array} - Random events
+     */
     function createRandomEvents() {
         var events = [];
         var i;

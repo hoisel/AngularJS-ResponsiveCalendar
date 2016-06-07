@@ -12,12 +12,70 @@ angular.module( 'ui.rCalendar' )
        } );
 
 angular.module( 'ui.rCalendar' )
+       .directive( 'calendar', function calendarDirective() {
+           'use strict';
+           return {
+               restrict: 'EA',
+               replace: true,
+               templateUrl: 'template/rcalendar/calendar.html',
+               bindToController: true,
+               controllerAs: 'vm',
+               scope: {
+                   viewRefreshed: '&',
+                   eventSelected: '&',
+                   timeSelected: '&',
+                   showEventList: '=',
+                   showEventPins: '='
+               },
+               require: [ 'calendar', '?^ngModel' ],
+               controller: 'ui.rCalendar.CalendarController',
+               link: function( scope, element, attrs, ctrls ) {
+                   var vm = ctrls[ 0 ];
+                   var ngModelCtrl = ctrls[ 1 ];
+
+                   if ( ngModelCtrl ) {
+                       vm.init( ngModelCtrl );
+                   }
+
+                   scope.$on( 'changeDate', function( event, direction ) {
+                       vm.move( direction );
+                   } );
+
+                   scope.$on( 'eventSourceChanged', function( event, value ) {
+                       vm.onEventSourceChanged( value );
+                   } );
+               }
+           };
+       } );
+
+angular.module( 'ui.rCalendar' ).directive( 'monthview', function monthDirective() {
+    'use strict';
+    return {
+        restrict: 'EA',
+        replace: true,
+        templateUrl: 'template/rcalendar/month.html'
+    };
+} );
+
+angular.module( 'ui.rCalendar' )
        .controller( 'ui.rCalendar.CalendarController', CalendarController );
 
 CalendarController.$inject = [
     '$scope', '$attrs', '$interpolate', '$log', '$mdMedia', 'dateFilter', 'calendarConfig'
 ];
 
+/**
+ * Calendar directive controller
+ *
+ * @param {Object} $scope -  angular $scope service
+ * @param {Object} $attrs -  angular $attrs service
+ * @param {Object} $interpolate -  angular $interpolate service
+ * @param {Object} $log -  angular $log service
+ * @param {Object} $mdMedia -  angular-material $mdMedia service
+ * @param {Object} dateFilter -  angular dateFilter filter
+ * @param {Object} calendarConfig -  calendar config
+ * @constructor
+ */
 function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateFilter, calendarConfig ) {
     'use strict';
     var vm = this;
@@ -44,13 +102,21 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     vm.$mdMedia = $mdMedia;
 
     /**
+     * Initialize the calendar
      *
-     * @param ngModelCtrl_
+     * @param {Object} ngModelCtrl_ - angular ngModel directive controller
+     *
+     * @returns {void}
      */
     vm.init = function( ngModelCtrl_ ) {
         ngModelCtrl = ngModelCtrl_;
         ngModelCtrl.$formatters.push( validateDate );
 
+        /**
+         * Copy model value to local scope and render the calendar
+         *
+         * @returns {void}
+         */
         ngModelCtrl.$render = function() {
             vm._selectedDate = ngModelCtrl.$viewValue || new Date();
             refreshView();
@@ -58,19 +124,25 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     };
 
     /**
+     * Event triggered on event source changed
      *
-     * @param value
+     * @param {Object} eventSource - the new event source
+     *
+     * @returns {void}
      */
-    vm.onEventSourceChanged = function( value ) {
-        vm.eventSource = value;
+    vm.onEventSourceChanged = function( eventSource ) {
+        vm.eventSource = eventSource;
         if ( onDataLoaded ) {
             onDataLoaded();
         }
     };
 
     /**
+     * Change selected month
      *
-     * @param step
+     * @param {Number} step -
+     *
+     * @returns {void}
      */
     vm.moveMonth = function( step ) {
         var year = vm._selectedDate.getFullYear();
@@ -90,8 +162,11 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     };
 
     /**
+     * Change selected day
      *
-     * @param step
+     * @param {Number} step -
+     *
+     * @returns {void}
      */
     vm.moveDay = function( step ) {
         var _selectedDate = vm._selectedDate;
@@ -107,8 +182,11 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     };
 
     /**
+     * Select a new date
      *
-     * @param selectedDate
+     * @param {Date} selectedDate - the choosen date
+     *
+     * @returns {void}
      */
     vm.select = function( selectedDate ) {
         var weeks = vm.weeks;
@@ -169,7 +247,10 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     /////////////////////////////////////////////////////////////////////
 
     /**
+     * Event called when view is refreshed and query mode is local (data is available locally).
+     * Fills event data on every date and change the selected date.
      *
+     * @returns {void}
      */
     function onDataLoaded() {
         var events = vm.eventSource;
@@ -274,7 +355,9 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     }
 
     /**
+     * Event called when view is refreshed.
      *
+     * @returns {void}
      */
     function onViewRefreshed() {
         if ( vm.queryMode === 'local' ) {
@@ -292,9 +375,12 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     }
 
     /**
-     * Attach metadata to each day
-     * @param days
-     * @param month
+     * Attach metadata to each date.
+     *
+     * @param {Array} days - javascript date array
+     * @param {Number} month - day's month
+     *
+     * @returns {void}
      */
     function attachDaysMetadata( days, month ) {
         var i;
@@ -307,8 +393,9 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
 
     /**
      * Create day metadata used by view
-     * @param day
-     * @returns {{label: *, headerLabel: *, selected: boolean, current: boolean}}
+     *
+     * @param {Date} day - javascript date
+     * @returns {{label: *, headerLabel: *, selected: boolean, current: boolean}} - day metadata
      */
     function createDayMetadata( day ) {
         return {
@@ -322,8 +409,8 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     /**
      * Create labels for calendar days header
      *
-     * @param days
-     * @returns {Array}
+     * @param {Array} days - javascript date array
+     * @returns {Array<String>} - array with days names
      */
     function createDaysLabels( days ) {
         var labels = new Array( 7 );
@@ -337,8 +424,8 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     /**
      * Generates n sequential dates from 'startDate'
      *
-     * @param startDate - the start date
-     * @param n - number de dates to generate from 'startDate'
+     * @param {Date} startDate - the start date
+     * @param {Number} n - number de dates to generate from 'startDate'
      * @returns {Array} - The generated dates
      */
     function generateNDaysFrom( startDate, n ) {
@@ -356,9 +443,10 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     }
 
     /**
+     * Validate model date
      *
-     * @param $viewValue
-     * @returns {null}
+     * @param {Object} $viewValue - angular $viewMode
+     * @returns {Object} - returns $viewValue if it is a valida date, or null otherwise
      */
     function validateDate( $viewValue ) {
         var date = new Date( $viewValue );
@@ -374,10 +462,12 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     }
 
     /**
+     * Compare 2 dates
      *
-     * @param date1
-     * @param date2
-     * @returns {number}
+     * @param {Date} date1 - javascript date
+     * @param {Date} date2 - javascript date
+     *
+     * @returns {number} - 0 if date are equal. Otherwise, returns a number different from 0
      */
     function compare( date1, date2 ) {
         return ( new Date( date1.getFullYear(), date1.getMonth(), date1.getDate() ) - new Date( date2.getFullYear(), date2.getMonth(), date2.getDate() ) );
@@ -386,8 +476,9 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     /**
      * Compare two events. Two events are equal if its startTime are equal
      *
-     * @param event1
-     * @param event2
+     * @param {Object} event1 - event
+     * @param {Object} event2 - event
+     *
      * @returns {number} - 0 if events are equal. Other number if are not equal
      */
     function compareEvent( event1, event2 ) {
@@ -431,9 +522,10 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     /**
      * Split array into smaller arrays
      *
-     * @param arr
-     * @param size
-     * @returns {Array}
+     * @param {Array} arr - array to split
+     * @param {Number} size - length of resulting arrays
+     *
+     * @returns {Array} - Array of arrays
      */
     function split( arr, size ) {
         var arrays = [];
@@ -446,8 +538,9 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
     /**
      * Generate calendar date range from current date
      *
-     * @param currentDate
-     * @returns {{startTime: Date, endTime: Date}}
+     * @param {Date} currentDate - current date
+     *
+     * @returns {{startTime: Date, endTime: Date}} - date range
      */
     function getRange( currentDate ) {
         var year = currentDate.getFullYear();
@@ -471,48 +564,3 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
         };
     }
 }
-
-angular.module( 'ui.rCalendar' )
-       .directive( 'calendar', function calendar() {
-           'use strict';
-           return {
-               restrict: 'EA',
-               replace: true,
-               templateUrl: 'template/rcalendar/calendar.html',
-               bindToController: true,
-               controllerAs: 'vm',
-               scope: {
-                   viewRefreshed: '&',
-                   eventSelected: '&',
-                   timeSelected: '&',
-                   showEventList: '=',
-                   showEventPins: '='
-               },
-               require: [ 'calendar', '?^ngModel' ],
-               controller: 'ui.rCalendar.CalendarController',
-               link: function( scope, element, attrs, ctrls ) {
-                   var vm = ctrls[ 0 ];
-                   var ngModelCtrl = ctrls[ 1 ];
-
-                   if ( ngModelCtrl ) {
-                       vm.init( ngModelCtrl );
-                   }
-
-                   scope.$on( 'changeDate', function( event, direction ) {
-                       vm.move( direction );
-                   } );
-
-                   scope.$on( 'eventSourceChanged', function( event, value ) {
-                       vm.onEventSourceChanged( value );
-                   } );
-               }
-           };
-       } )
-       .directive( 'monthview', function monthView() {
-           'use strict';
-           return {
-               restrict: 'EA',
-               replace: true,
-               templateUrl: 'template/rcalendar/month.html'
-           };
-       } );

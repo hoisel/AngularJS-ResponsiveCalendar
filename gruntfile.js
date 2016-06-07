@@ -3,9 +3,10 @@ module.exports = function( grunt ) {
     // Project Configuration
 
     /**
+     * Adiciona aspas a uma string
      *
-     * @param str
-     * @returns {string}
+     * @param {String} str - a string que receberá as aspas
+     * @returns {string} - a string com aspas
      */
     function enquote( str ) {
         return '"' + str + '"';
