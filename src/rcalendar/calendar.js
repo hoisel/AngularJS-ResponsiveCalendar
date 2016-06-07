@@ -31,9 +31,7 @@ angular.module('ui.rCalendar', [])
             function (key, index) {
                 self[key] = angular.isDefined($attrs[key]) ? (index < 7 ? $interpolate($attrs[key])($scope.$parent) : $scope.$parent.$eval($attrs[key])) : calendarConfig[key];
             });
-
-
-
+        
         $scope.$parent.$watch($attrs.eventSource, function (value) {
             self.onEventSourceChanged(value);
         });
@@ -41,18 +39,18 @@ angular.module('ui.rCalendar', [])
         if (angular.isDefined($attrs.initDate)) {
             initDate = $scope.$parent.$eval($attrs.initDate);
         }
-
         self.$mdMedia = $mdMedia;
 
+        self.isValid = function(  ) {
+            return ngModelCtrl.$valid;
+        };
 
         self.init = function (ngModelCtrl_) {
             ngModelCtrl = ngModelCtrl_;
-            ngModelCtrl.$parsers.push(validateDate);
+            ngModelCtrl.$formatters.push(validateDate);
 
             ngModelCtrl.$render = function () {
-
-                self.currentCalendarDate = ngModelCtrl.$viewValue || initDate;
-
+                self._selectedDate = ngModelCtrl.$viewValue || initDate || new Date();
                 refreshView();
             };
         };
@@ -66,9 +64,9 @@ angular.module('ui.rCalendar', [])
 
 
         self.moveMonth = function (step) {
-            var year = self.currentCalendarDate.getFullYear();
-            var month = self.currentCalendarDate.getMonth() + step;
-            var date = self.currentCalendarDate.getDate();
+            var year = self._selectedDate.getFullYear();
+            var month = self._selectedDate.getMonth() + step;
+            var date = self._selectedDate.getDate();
             var newDate = new Date(year, month, date);
             var firstDayInNextMonth = new Date(year, month + 1, 1);
 
@@ -76,6 +74,7 @@ angular.module('ui.rCalendar', [])
                 newDate = new Date(firstDayInNextMonth - 24 * 60 * 60 * 1000);
             }
 
+            self._selectedDate = newDate;
             ngModelCtrl.$setViewValue(newDate);
 
             refreshView();
@@ -83,12 +82,14 @@ angular.module('ui.rCalendar', [])
 
 
         self.moveDay = function (step) {
-            var currentCalendarDate = self.currentCalendarDate;
-            var year = currentCalendarDate.getFullYear();
-            var month = currentCalendarDate.getMonth();
-            var date = currentCalendarDate.getDate() + step;
+            var _selectedDate = self._selectedDate;
+            var year = _selectedDate.getFullYear();
+            var month = _selectedDate.getMonth();
+            var date = _selectedDate.getDate() + step;
+            var newDate = new Date(year, month, date);
 
-            ngModelCtrl.$setViewValue( new Date(year, month, date));
+            self._selectedDate = newDate;
+            ngModelCtrl.$setViewValue(newDate);
 
             refreshView();
         };
@@ -106,8 +107,8 @@ angular.module('ui.rCalendar', [])
             var date;
 
             if (weeks) {
-                currentMonth = self.currentCalendarDate.getMonth();
-                currentYear = self.currentCalendarDate.getFullYear();
+                currentMonth = self._selectedDate.getMonth();
+                currentYear = self._selectedDate.getFullYear();
                 selectedMonth = selectedDate.getMonth();
                 selectedYear = selectedDate.getFullYear();
                 direction = 0;
@@ -120,6 +121,7 @@ angular.module('ui.rCalendar', [])
                     direction = currentYear < selectedYear ? 1 : -1;
                 }
 
+                self._selectedDate = selectedDate;
                 if (ngModelCtrl) {
                     ngModelCtrl.$setViewValue(selectedDate);
                 }
@@ -277,7 +279,7 @@ angular.module('ui.rCalendar', [])
             return {
                 label: dateFilter(day, self.formatDay),
                 headerLabel: dateFilter(day,self.formatDayHeader),
-                selected: compare(day, self.currentCalendarDate) === 0,
+                selected: compare(day, self._selectedDate) === 0,
                 current: compare(day, new Date()) === 0
             };
         }
@@ -311,14 +313,13 @@ angular.module('ui.rCalendar', [])
             var date = new Date($viewValue);
             var isValid = !isNaN(date);
 
-            if (isValid) {
-                self.currentCalendarDate = date;
-            } else {
+            if (!isValid) {
                 $log.error('"ng-model" value must be a Date object, a number of milliseconds since 01.01.1970 or a string representing an RFC2822 or ISO 8601 date.');
+                $log.info('using current date as ngModel');
             }
-            ngModelCtrl.$setValidity('date', isValid);
 
-            return $viewValue;
+            ngModelCtrl.$setValidity('date', isValid);
+            return isValid ? $viewValue : null;
         }
 
 
@@ -342,7 +343,7 @@ angular.module('ui.rCalendar', [])
 
             if (self.mode) {
 
-                self.range = getRange(self.currentCalendarDate);
+                self.range = getRange(self._selectedDate);
 
                 startDate = self.range.startTime;
                 day = startDate.getDate();

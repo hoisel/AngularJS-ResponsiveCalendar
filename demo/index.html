@@ -25,6 +25,10 @@
 							   ng-click="today()"
 							   ng-disabled="isToday()">Hoje
 					</md-button>
+					<md-button class="md-raised md-accent"
+							   ng-class="{'md-small': $mdMedia('xs')}"
+							   ng-click="randomDate()">Outra data
+					</md-button>
 					<md-button ng-class="{'md-small': $mdMedia('xs')}"
 							   ng-click="showPins = !showPins">show Pins
 					</md-button>

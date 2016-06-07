@@ -118,7 +118,7 @@ angular.module( 'calendarDemoApp' ).config( [
 angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
     '$scope', function( $scope ) {
         'use strict';
-
+        $scope.currentDate = new Date();
         $scope.showPins = true;
         $scope.showEventList = true;
 
@@ -127,9 +127,14 @@ angular.module( 'calendarDemoApp' ).controller( 'CalendarDemoCtrl', [
         $scope.changeMode = function( mode ) {
             $scope.mode = mode;
         };
-
+        //$scope.currentDate = new Date(2016,5,10);
+        //$scope.currentDate = 's';
         $scope.today = function() {
             $scope.currentDate = new Date();
+        };
+
+        $scope.randomDate = function() {
+            $scope.currentDate = new Date(2016,5,23);
         };
 
         $scope.isToday = function() {
