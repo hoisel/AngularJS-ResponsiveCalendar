@@ -19,7 +19,7 @@ module.exports = function( grunt ) {
                 configFile: '.eslintrc',
                 fix: true
             },
-            target: [ 'gruntfile.js', 'demo/**/*.js', 'src/**/*.js' ]
+            target: [ 'gruntfile.js', 'demo/calendarDemoCtrl.js', 'src/**/*.js' ]
         },
         html2js: {
             dist_tpls: {

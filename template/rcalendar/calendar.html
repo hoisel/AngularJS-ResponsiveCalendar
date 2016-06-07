@@ -81,7 +81,7 @@
 												 md: vm.$mdMedia('gt-sm'),
 												 lg: vm.$mdMedia('gt-md')}">
 										<div class="month-event-pin left"
-											 ng-style="{'background-color': event.color}"
+											 ng-style="{'background-color': event.color || vm.defaultEventColor }"
 											 ng-repeat="event in dt.events | orderBy : 'color' track by $index"></div>
 									</div>
 								</div>
@@ -118,7 +118,7 @@
 					</div>
 					<div class="event-inner md-whiteframe-2dp md-padding"
 						 ng-repeat="event in vm.selectedDate.events track by $index"
-						 ng-style="{'background-color': event.color}">
+						 ng-style="{'background-color': event.color || vm.defaultEventColor }">
 						<div class="md-body-2">
 							<strong>{{event.title}}</strong></div>
 						<div class="md-body-2">{{event.startTime|date: vm.formatHourColumn}} - {{event.endTime|date: vm.formatHourColumn}}</div>

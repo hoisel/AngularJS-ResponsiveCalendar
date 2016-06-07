@@ -225,7 +225,6 @@ function CalendarDemoController( $log ) {
                 description: 'Long story short, though, its much improved by using dedicated click handlers, setting a ngModel if desired, taking all kinds of labels',
                 startTime: startTime,
                 endTime: endTime,
-                allDay: false,
                 color: color
             } );
         }

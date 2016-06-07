@@ -49,12 +49,18 @@ angular.module( 'ui.rCalendar' )
            };
        } );
 
-
 angular.module( 'ui.rCalendar' )
        .controller( 'ui.rCalendar.CalendarController', CalendarController );
 
 CalendarController.$inject = [
-    '$scope', '$attrs', '$interpolate', '$log', '$mdMedia', 'dateFilter', 'calendarConfig'
+    '$scope',
+    '$attrs',
+    '$interpolate',
+    '$log',
+    '$mdMedia',
+    '$mdColors',
+    'dateFilter',
+    'calendarConfig'
 ];
 
 /**
@@ -65,11 +71,12 @@ CalendarController.$inject = [
  * @param {Object} $interpolate -  angular $interpolate service
  * @param {Object} $log -  angular $log service
  * @param {Object} $mdMedia -  angular-material $mdMedia service
+ * @param {Object} $mdColors -  angular-material $mdColors service
  * @param {Object} dateFilter -  angular dateFilter filter
  * @param {Object} calendarConfig -  calendar config
  * @constructor
  */
-function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateFilter, calendarConfig ) {
+function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, $mdColors, dateFilter, calendarConfig ) {
     'use strict';
     var vm = this;
     var ngModelCtrl = { $setViewValue: angular.noop }; // nullModelCtrl;
@@ -85,13 +92,14 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, dateF
         'eventSource',
         'queryMode'
     ], function( key, index ) {
-        vm[ key ] = angular.isDefined( $attrs[ key ] ) ? ( index < 7 ? $interpolate( $attrs[ key ] )( $scope.$parent ) : $scope.$parent.$eval( $attrs[ key ] ) ) : calendarConfig[ key ];
+        vm[ key ] = angular.isDefined( $attrs[ key ] ) ? ( index < 4 ? $interpolate( $attrs[ key ] )( $scope.$parent ) : $scope.$parent.$eval( $attrs[ key ] ) ) : calendarConfig[ key ];
     } );
 
     $scope.$parent.$watch( $attrs.eventSource, function( value ) {
         vm.onEventSourceChanged( value );
     } );
 
+    vm.defaultEventColor = $mdColors.getThemeColor( 'accent' );
     vm.$mdMedia = $mdMedia;
 
     /**
@@ -643,7 +651,7 @@ angular.module("template/rcalendar/calendar.html", []).run(["$templateCache", fu
     "												 md: vm.$mdMedia('gt-sm'),\n" +
     "												 lg: vm.$mdMedia('gt-md')}\">\n" +
     "										<div class=\"month-event-pin left\"\n" +
-    "											 ng-style=\"{'background-color': event.color}\"\n" +
+    "											 ng-style=\"{'background-color': event.color || vm.defaultEventColor }\"\n" +
     "											 ng-repeat=\"event in dt.events | orderBy : 'color' track by $index\"></div>\n" +
     "									</div>\n" +
     "								</div>\n" +
@@ -680,7 +688,7 @@ angular.module("template/rcalendar/calendar.html", []).run(["$templateCache", fu
     "					</div>\n" +
     "					<div class=\"event-inner md-whiteframe-2dp md-padding\"\n" +
     "						 ng-repeat=\"event in vm.selectedDate.events track by $index\"\n" +
-    "						 ng-style=\"{'background-color': event.color}\">\n" +
+    "						 ng-style=\"{'background-color': event.color || vm.defaultEventColor }\">\n" +
     "						<div class=\"md-body-2\">\n" +
     "							<strong>{{event.title}}</strong></div>\n" +
     "						<div class=\"md-body-2\">{{event.startTime|date: vm.formatHourColumn}} - {{event.endTime|date: vm.formatHourColumn}}</div>\n" +
