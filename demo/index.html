@@ -10,50 +10,52 @@
 		<link rel="stylesheet" href="../dist/css/calendar.min.css"/>
 	</head>
 	<body ng-controller="CalendarDemoController as vm" style="margin-top: 30px;">
-			<!--<md-toolbar>
-				<header layout="column" class="md-padding">
-					<div class="md-title">
-						AngularJS Responsive Calendar
-					</div>
-					<div class="md-subhead">A pure AngularJS responsive calendar directive</div>
-				</header>
-			</md-toolbar>-->
-			<section ng-init="vm.loadEvents()">
-				<section layout="row" class="md-padding">
-					<md-button class="md-raised md-accent"
-							   ng-class="{'md-small': $mdMedia('xs')}"
-							   ng-click="vm.today()"
-							   ng-disabled="vm.isToday()">Hoje
-					</md-button>
-					<md-button ng-class="{'md-small': $mdMedia('xs')}"
-							   ng-click="vm.showPins = !vm.showPins">Exibir eventos
-					</md-button>
-					<md-button ng-class="{'md-small': $mdMedia('xs')}"
-							   ng-click="vm.showEventList = !vm.showEventList">Exibir detalhes
-					</md-button>
-				</section>
-
-				<calendar ng-model="vm.currentDate"
-						  event-source="vm.eventSource"
-						  show-event-list="vm.showEventList"
-						  show-event-pins="vm.showPins"
-						  query-mode="vm.queryModel"
-						  view-refreshed="vm.reloadSource(selectedDate, range)"
-						  event-selected="vm.onEventSelected(event)"
-						  time-selected="vm.onTimeSelected(selectedTime)"></calendar>
+		<!--<md-toolbar>
+			<header layout="column" class="md-padding">
+				<div class="md-title">
+					AngularJS Responsive Calendar
+				</div>
+				<div class="md-subhead">A pure AngularJS responsive calendar directive</div>
+			</header>
+		</md-toolbar>-->
+		<section ng-init="vm.loadEvents()">
+			<section layout="row" class="md-padding">
+				<md-button class="md-raised md-accent"
+						   ng-class="{'md-small': $mdMedia('xs')}"
+						   ng-click="vm.today()"
+						   ng-disabled="vm.isToday()">Hoje
+				</md-button>
+				<md-button ng-class="{'md-small': $mdMedia('xs')}"
+						   ng-click="vm.showPins = !vm.showPins">Exibir eventos
+				</md-button>
+				<md-button ng-class="{'md-small': $mdMedia('xs')}"
+						   ng-click="vm.showEventList = !vm.showEventList">Exibir detalhes
+				</md-button>
 			</section>
 
-			<!-- Angular Material requires Angular.js Libraries -->
-			<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
-			<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.min.js"></script>
-			<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-aria.min.js"></script>
-			<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-messages.min.js"></script>
-			<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.5.6/angular-locale_pt-br.js"></script>
+			<calendar ng-model="vm.currentDate"
+					  event-source="vm.eventSource"
+					  show-event-list="vm.showEventList"
+					  show-event-pins="vm.showPins"
+					  query-mode="vm.queryModel"
+					  view-refreshed="vm.reloadSource(selectedDate, range)"
+					  event-selected="vm.onEventSelected(event)"
+					  time-selected="vm.onTimeSelected(selectedTime)"></calendar>
+		</section>
 
-			<script src="./sticky.min.js"></script>
-			<!-- Angular Material Library -->
-			<script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc4/angular-material.min.js"></script>
-			<script src="../dist/js/calendar-tpls.js"></script>
-			<script src="calendarDemoCtrl.js"></script>
+		<!-- Angular Material requires Angular.js Libraries -->
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-aria.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-messages.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc4/angular-material.min.js"></script>
+
+		<!-- Others -->
+		<script src="./sticky.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.5.6/angular-locale_pt-br.js"></script>
+
+		<!-- Calendar-->
+		<script src="../dist/js/calendar-tpls.js"></script>
+		<script src="calendarDemoCtrl.js"></script>
 	</body>
 </html>
