@@ -6,7 +6,7 @@ angular.module('ui.rCalendar', [])
         formatWeekTitle: 'MMMM yyyy, Week w',
         formatMonthTitle: 'MMMM yyyy',
         formatWeekViewDayHeader: 'EEE d',
-        formatHourColumn: 'MMMM dd, HH:mm',
+        formatHourColumn: 'dd \'de\' MMMM, HH:mm',
         startingDay: 0,
         eventSource: null,
         queryMode: 'local'
