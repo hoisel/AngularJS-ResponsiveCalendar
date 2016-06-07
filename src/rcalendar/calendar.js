@@ -5,7 +5,7 @@ angular.module( 'ui.rCalendar' )
            formatDayHeader: 'EEE',
            formatDayTitle: 'MMMM dd, yyyy',
            formatMonthTitle: 'MMMM yyyy',
-           formatHourColumn: 'dd \'de\' MMMM, HH:mm',
+           formatHourColumn: 'dd MMMM, HH:mm',
            startingDay: 0,
            eventSource: null,
            queryMode: 'local'
