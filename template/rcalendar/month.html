@@ -7,8 +7,8 @@
 				offset="0"
 				media-query="min-width: 960px"
 				class="event-inner"
-				md-swipe-left='ctrl.moveMonth(1)'
-				md-swipe-right='ctrl.moveMonth(-1)'>
+				md-swipe-left='vm.moveMonth(1)'
+				md-swipe-right='vm.moveMonth(-1)'>
 				<md-card-header layout='row'
 								layout-align="space-between center"
 								sticky offset="0"
@@ -16,18 +16,18 @@
 								sticky-class="sticked">
 					<md-button
 						class="md-icon-button"
-						ng-click="ctrl.moveMonth(-1)"
+						ng-click="vm.moveMonth(-1)"
 						aria-label="Mês anterior">
 						<md-icon md-svg-icon="md-tabs-arrow">«</md-icon>
 					</md-button>
 					<div flex></div>
 					<h2 class="md-title">
-						<span>{{ctrl.title}}</span>
+						<span>{{vm.title}}</span>
 					</h2>
 					<div flex></div>
 					<md-button
 						class="md-icon-button"
-						ng-click="ctrl.moveMonth(1)"
+						ng-click="vm.moveMonth(1)"
 						aria-label="Mês seguinte">
 						<md-icon md-svg-icon="md-tabs-arrow" class="moveNext"></md-icon>
 					</md-button>
@@ -40,7 +40,7 @@
 						<md-grid-tile md-rowspan="1"
 									  md-colspan="1"
 									  style="background: #fff"
-									  ng-repeat="label in ctrl.labels track by $index">
+									  ng-repeat="label in vm.labels track by $index">
 							<small style="font-weight: bold;">{{label}}</small>
 						</md-grid-tile>
 					</md-grid-list>
@@ -51,12 +51,12 @@
 								  md-gutter="0px">
 						<md-grid-tile md-rowspan="1"
 									  md-colspan="1"
-									  ng-repeat="dt in ctrl.weeks[0].concat(ctrl.weeks[1])
-																	.concat(ctrl.weeks[2])
-																	.concat(ctrl.weeks[3])
-																	.concat(ctrl.weeks[4])
-																	.concat(ctrl.weeks[5]) track by $index"
-									  ng-click="ctrl.select(dt)"
+									  ng-repeat="dt in vm.weeks[0].concat(vm.weeks[1])
+																	.concat(vm.weeks[2])
+																	.concat(vm.weeks[3])
+																	.concat(vm.weeks[4])
+																	.concat(vm.weeks[5]) track by $index"
+									  ng-click="vm.select(dt)"
 									  class="monthview-dateCell"
 									  ng-focus="focus = true;"
 									  ng-blur="focus = false;"
@@ -74,11 +74,11 @@
 								<span class="date md-subheader">
 									{{dt.label}}
 								</span>
-								<div ng-if="ctrl.showEventPins"
+								<div ng-if="vm.showEventPins"
 									 class="month-events"
-									 ng-class="{ sm: ctrl.$mdMedia('gt-xs'),
-												 md: ctrl.$mdMedia('gt-sm'),
-												 lg: ctrl.$mdMedia('gt-md')}">
+									 ng-class="{ sm: vm.$mdMedia('gt-xs'),
+												 md: vm.$mdMedia('gt-sm'),
+												 lg: vm.$mdMedia('gt-md')}">
 									<div class="month-event-pin left"
 										 ng-style="{'background-color': event.color}"
 										 ng-repeat="event in dt.events | orderBy : 'color' track by $index"></div>
@@ -90,12 +90,12 @@
 			</md-card>
 		</div>
 		<md-card id="day-events"
-				 ng-if="ctrl.showEventList"
+				 ng-if="vm.showEventList"
 				 flex
-				 md-swipe-left='ctrl.moveDay(1)'
-				 md-swipe-right='ctrl.moveDay(-1)'
+				 md-swipe-left='vm.moveDay(1)'
+				 md-swipe-right='vm.moveDay(-1)'
 				 class="event-inner"
-				 ng-class="{ md: ctrl.$mdMedia('gt-sm')}">
+				 ng-class="{ md: vm.$mdMedia('gt-sm')}">
 			<md-card-header layout='row'
 							layout-align="space-between center"
 							sticky
@@ -106,21 +106,21 @@
 					layout
 					layout-align="center"
 					layout-align-gt-sm="start">
-					<span class="md-title">{{ctrl.selectedDate|date: ctrl.formatDay }}</span>
-					<span class="md-subhead">{{ctrl.selectedDate|date: 'EEEE'}}</span>
+					<span class="md-title">{{vm.selectedDate|date: vm.formatDay }}</span>
+					<span class="md-subhead">{{vm.selectedDate|date: 'EEEE'}}</span>
 				</md-card-header-text>
 			</md-card-header>
 			<md-divider></md-divider>
 			<md-card-content>
-				<div ng-if="!ctrl.selectedDate.events">
+				<div ng-if="!vm.selectedDate.events">
 					<p>Nenhum evento encontrado</p>
 				</div>
 				<div class="event-inner md-whiteframe-2dp md-padding"
-					 ng-repeat="event in ctrl.selectedDate.events track by $index"
+					 ng-repeat="event in vm.selectedDate.events track by $index"
 					 ng-style="{'background-color': event.color}">
 					<div class="md-body-2">
 						<strong>{{event.title}}</strong></div>
-					<div class="md-body-2">{{event.startTime|date: ctrl.formatHourColumn}} - {{event.endTime|date: ctrl.formatHourColumn}}</div>
+					<div class="md-body-2">{{event.startTime|date: vm.formatHourColumn}} - {{event.endTime|date: vm.formatHourColumn}}</div>
 				</div>
 			</md-card-content>
 		</md-card>
