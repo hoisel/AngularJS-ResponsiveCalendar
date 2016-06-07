@@ -3,7 +3,7 @@
 A pure AngularJS responsive calendar directive with material theme
 
 # Demo
-http://hoisel.github.io/AngularJS-ResponsiveCalendar/demo/index.html
+http://hoisel.github.io/angular-material-calendar/demo/index.html
 
 # Usage
 
