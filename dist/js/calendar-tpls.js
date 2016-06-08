@@ -8,7 +8,7 @@ angular.module( 'ui.rCalendar' )
            formatMonthTitle: 'MMMM yyyy',
            formatHourColumn: 'dd MMMM, HH:mm',
            startingDay: 0,
-           eventSource: null,
+           eventSources: null,
            queryMode: 'local'
        } );
 
@@ -89,13 +89,13 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, $mdCo
         'formatMonthTitle',
         'formatHourColumn',
         'startingDay',
-        'eventSource',
+        'eventSources',
         'queryMode'
     ], function( key, index ) {
-        vm[ key ] = angular.isDefined( $attrs[ key ] ) ? ( index < 4 ? $interpolate( $attrs[ key ] )( $scope.$parent ) : $scope.$parent.$eval( $attrs[ key ] ) ) : calendarConfig[ key ];
+        vm[ key ] = angular.isDefined( $attrs[ key ] ) ? ( index < 5 ? $interpolate( $attrs[ key ] )( $scope.$parent ) : $scope.$parent.$eval( $attrs[ key ] ) ) : calendarConfig[ key ];
     } );
 
-    $scope.$parent.$watch( $attrs.eventSource, function( value ) {
+    $scope.$parent.$watch( $attrs.eventSources, function( value ) {
         vm.onEventSourceChanged( value );
     } );
 
@@ -127,12 +127,12 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, $mdCo
     /**
      * Event triggered on event source changed
      *
-     * @param {Object} eventSource - the new event source
+     * @param {Object} eventSources - the new event source
      *
      * @returns {void}
      */
-    vm.onEventSourceChanged = function( eventSource ) {
-        vm.eventSource = eventSource;
+    vm.onEventSourceChanged = function( eventSources ) {
+        vm.eventSources = eventSources;
         if ( onDataLoaded ) {
             onDataLoaded();
         }
@@ -254,23 +254,24 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, $mdCo
      * @returns {void}
      */
     function onDataLoaded() {
-        var events = vm.eventSource;
-        var len = events ? events.length : 0;
+        var sources = vm.eventSources;
+        var sourceLength = sources ? sources.length : 0;
+        var source;
+        var eventsLength;
         var startTime = vm.range.startTime;
         var endTime = vm.range.endTime;
         var weeks = vm.weeks;
         var oneDay = 86400000;
         var eps = 0.001;
-        var row;
+        var week;
         var date;
+        var day;
         var hasEvent = false;
-        var findSelected = false;
-        var st;
-        var et;
         var eventSet;
         var rowIndex;
         var dayIndex;
         var i;
+        var s;
         var index;
         var timeDifferenceStart;
         var timeDifferenceEnd;
@@ -278,80 +279,87 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, $mdCo
         var eventStartTime;
         var eventEndTime;
 
+        // limpa eventos do mês
         if ( weeks.hasEvent ) {
-            for ( row = 0; row < 6; row += 1 ) {
-                for ( date = 0; date < 7; date += 1 ) {
-                    if ( weeks[ row ][ date ].hasEvent ) {
-                        weeks[ row ][ date ].events = null;
-                        weeks[ row ][ date ].hasEvent = false;
+            for ( week = 0; week < 6; week += 1 ) {
+                for ( day = 0; day < 7; day += 1 ) {
+                    date = weeks[ week ][ day ];
+                    if ( date.hasEvent ) {
+                        date.events = null;
+                        date.hasEvent = false;
                     }
                 }
             }
         }
 
-        for ( i = 0; i < len; i += 1 ) {
-            event = events[ i ];
-            eventStartTime = new Date( event.startTime );
-            eventEndTime = new Date( event.endTime );
+        for ( s = 0; s < sourceLength; s += 1 ) {
+            source = sources[ s ];
+            eventsLength = ( source && source.items ) ? source.items.length : 0;
 
-            if ( eventEndTime <= startTime || eventStartTime >= endTime ) {
-                continue;
-            } else {
-                st = startTime;
-                et = endTime;
-            }
+            for ( i = 0; i < eventsLength; i += 1 ) {
+                event = source.items[ i ];
+                eventStartTime = new Date( event.startTime );
+                eventEndTime = new Date( event.endTime );
 
-            if ( eventStartTime <= st ) {
-                timeDifferenceStart = 0;
-            } else {
-                timeDifferenceStart = ( eventStartTime - st ) / oneDay;
-            }
+                // se evento termina antes do inicio do mes ou
+                // começa depois do fim do mes, pula o evento
+                if ( eventEndTime <= startTime || eventStartTime >= endTime ) {
+                    continue;
+                }
 
-            if ( eventEndTime >= et ) {
-                timeDifferenceEnd = ( et - st ) / oneDay;
-            } else {
-                timeDifferenceEnd = ( eventEndTime - st ) / oneDay;
-            }
-
-            index = Math.floor( timeDifferenceStart );
-
-            while ( index < timeDifferenceEnd - eps ) {
-                rowIndex = Math.floor( index / 7 );
-                dayIndex = Math.floor( index % 7 );
-                weeks[ rowIndex ][ dayIndex ].hasEvent = true;
-                eventSet = weeks[ rowIndex ][ dayIndex ].events;
-                if ( eventSet ) {
-                    eventSet.push( event );
+                // se o evento começa no mês anterior
+                if ( eventStartTime <= startTime ) {
+                    timeDifferenceStart = 0;
                 } else {
-                    eventSet = [];
+                    timeDifferenceStart = ( eventStartTime - startTime ) / oneDay;
+                }
+
+                if ( eventEndTime >= endTime ) {
+                    timeDifferenceEnd = ( endTime - startTime ) / oneDay;
+                } else {
+                    timeDifferenceEnd = ( eventEndTime - startTime ) / oneDay;
+                }
+
+                index = Math.floor( timeDifferenceStart );
+
+                while ( index < timeDifferenceEnd - eps ) {
+                    rowIndex = Math.floor( index / 7 );
+                    dayIndex = Math.floor( index % 7 );
+                    date = weeks[ rowIndex ][ dayIndex ];
+                    date.hasEvent = true;
+
+                    // add events
+                    eventSet = date.events || [];
                     eventSet.push( event );
-                    weeks[ rowIndex ][ dayIndex ].events = eventSet;
-                }
-                index += 1;
-            }
-        }
+                    date.events = eventSet;
 
-        for ( row = 0; row < 6; row += 1 ) {
-            for ( date = 0; date < 7; date += 1 ) {
-                if ( weeks[ row ][ date ].hasEvent ) {
-                    hasEvent = true;
-                    weeks[ row ][ date ].events.sort( compareEvent );
-                }
-            }
-        }
-        weeks.hasEvent = hasEvent;
+                    // add sources
+                    date.sources = date.sources || {};
+                    date.sources[ source.etag ] = date.sources[ source.etag ] || {
+                        summary: source.summary,
+                        color: source.color,
+                        etag: source.etag
+                    };
 
-        for ( row = 0; row < 6; row += 1 ) {
-            for ( date = 0; date < 7; date += 1 ) {
-                if ( weeks[ row ][ date ].selected ) {
-                    vm.selectedDate = weeks[ row ][ date ];
-                    findSelected = true;
-                    break;
+                    index += 1;
                 }
             }
-            if ( findSelected ) {
-                break;
+
+            for ( week = 0; week < 6; week += 1 ) {
+                for ( day = 0; day < 7; day += 1 ) {
+                    date = weeks[ week ][ day ];
+
+                    if ( date.hasEvent ) {
+                        hasEvent = true;
+                        date.events.sort( compareEvent );
+                    }
+
+                    if ( date.selected ) {
+                        vm.selectedDate = date;
+                    }
+                }
             }
+            weeks.hasEvent = hasEvent;
         }
     }
 
@@ -362,7 +370,7 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, $mdCo
      */
     function onViewRefreshed() {
         if ( vm.queryMode === 'local' ) {
-            if ( vm.eventSource && onDataLoaded ) {
+            if ( vm.eventSources && onDataLoaded ) {
                 onDataLoaded();
             }
         } else if ( vm.queryMode === 'remote' ) {
@@ -512,6 +520,7 @@ function CalendarController( $scope, $attrs, $interpolate, $log, $mdMedia, $mdCo
 
             attachDaysMetadata( days, month );
 
+            vm.days = [].concat( days );
             vm.labels = createDaysLabels( days );
             vm.title = dateFilter( headerDate, vm.formatMonthTitle );
             vm.weeks = split( days, 7 );
@@ -622,11 +631,7 @@ angular.module("template/rcalendar/calendar.html", []).run(["$templateCache", fu
     "									  md-gutter=\"0px\">\n" +
     "							<md-grid-tile md-rowspan=\"1\"\n" +
     "										  md-colspan=\"1\"\n" +
-    "										  ng-repeat=\"dt in vm.weeks[0].concat(vm.weeks[1])\n" +
-    "																	.concat(vm.weeks[2])\n" +
-    "																	.concat(vm.weeks[3])\n" +
-    "																	.concat(vm.weeks[4])\n" +
-    "																	.concat(vm.weeks[5]) track by $index\"\n" +
+    "										  ng-repeat=\"dt in vm.days track by $index\"\n" +
     "										  ng-click=\"vm.select(dt)\"\n" +
     "										  class=\"monthview-dateCell\"\n" +
     "										  ng-focus=\"focus = true;\"\n" +
@@ -645,14 +650,25 @@ angular.module("template/rcalendar/calendar.html", []).run(["$templateCache", fu
     "								<span class=\"date md-subheader\">\n" +
     "									{{dt.label}}\n" +
     "								</span>\n" +
-    "									<div ng-if=\"vm.showEventPins\"\n" +
+    "									<!--<div ng-if=\"vm.showEventPins\"\n" +
     "										 class=\"month-events\"\n" +
     "										 ng-class=\"{ sm: vm.$mdMedia('gt-xs'),\n" +
     "												 md: vm.$mdMedia('gt-sm'),\n" +
     "												 lg: vm.$mdMedia('gt-md')}\">\n" +
     "										<div class=\"month-event-pin left\"\n" +
     "											 ng-style=\"{'background-color': event.color || vm.defaultEventColor }\"\n" +
-    "											 ng-repeat=\"event in dt.events | orderBy : 'color' track by $index\"></div>\n" +
+    "											 ng-repeat=\"event in dt.events track by $index\"></div>\n" +
+    "									</div>-->\n" +
+    "\n" +
+    "									<div ng-if=\"vm.showEventPins && dt.hasEvent\"\n" +
+    "										 class=\"month-events\"\n" +
+    "										 ng-class=\"{ sm: vm.$mdMedia('gt-xs'),\n" +
+    "												 md: vm.$mdMedia('gt-sm'),\n" +
+    "												 lg: vm.$mdMedia('gt-md')}\">\n" +
+    "										<div class=\"month-event-pin left\"\n" +
+    "											 ng-style=\"{'background-color': source.color || vm.defaultEventColor }\"\n" +
+    "											 ng-repeat=\"source in dt.sources track by source.etag\">\n" +
+    "										</div>\n" +
     "									</div>\n" +
     "								</div>\n" +
     "							</md-grid-tile>\n" +
@@ -687,10 +703,10 @@ angular.module("template/rcalendar/calendar.html", []).run(["$templateCache", fu
     "						<p>Nenhum evento encontrado</p>\n" +
     "					</div>\n" +
     "					<div class=\"event-inner md-whiteframe-2dp md-padding\"\n" +
-    "						 ng-repeat=\"event in vm.selectedDate.events track by $index\"\n" +
+    "						 ng-repeat=\"event in vm.selectedDate.events track by event.id\"\n" +
     "						 ng-style=\"{'background-color': event.color || vm.defaultEventColor }\">\n" +
     "						<div class=\"md-body-2\">\n" +
-    "							<strong>{{event.title}}</strong></div>\n" +
+    "							<strong>{{event.summary}}</strong></div>\n" +
     "						<div class=\"md-body-2\">{{event.startTime|date: vm.formatHourColumn}} - {{event.endTime|date: vm.formatHourColumn}}</div>\n" +
     "					</div>\n" +
     "				</md-card-content>\n" +

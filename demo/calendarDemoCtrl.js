@@ -153,11 +153,24 @@ CalendarDemoController.$inject = [ '$log', 'tmhDynamicLocale' ];
 function CalendarDemoController( $log, tmhDynamicLocale ) {
     'use strict';
 
+    var i;
     var vm = this;
-    var colors = [
-        '#EF5350', '#EC407A', '#AB47BC', '#29B6F6', '#7CB342', '#66BB6A', '#FFCA28', '#FF7043'
+    var eventSources;
+    var colors = new Array( 100 );
+
+    for ( i = 0; i < colors.length; i += 1 ) {
+        colors[ i ] = '#' + ( Math.random() * 0xFFFFFF << 0 ).toString( 16 );
+    }
+
+    eventSources = [
+        { summary: 'SEFAZ' }, { summary: 'SEGER' }, { summary: 'SEJUS' }, { summary: 'PRODEST' }
     ];
-    var allEvents = createRandomEvents();
+
+    eventSources.forEach( function( source ) {
+        source.color = colors[ Math.floor( Math.random() * ( ( colors.length - 1 ) - 0 + 1 ) ) ];
+        source.items = createRandomEvents( source.summary, Math.floor( Math.random() * 500 ), source.color );
+        source.etag = guid();
+    } );
 
     vm.availableLocales = [
         {
@@ -194,84 +207,96 @@ function CalendarDemoController( $log, tmhDynamicLocale ) {
     vm.showPins = true;
     vm.showEventList = true;
     vm.queryModel = 'local';
-
-    vm.changeLocale = function( locale ) {
-        tmhDynamicLocale.set( locale ).then( function() {
-            vm.currentDate = new Date( vm.currentDate );
-        } );
-    };
-
+    vm.changeLocale = changeLocale;
+    vm.changeMode = changeMode;
+    vm.today = today;
+    vm.randomDate = randomDate;
+    vm.isToday = isToday;
+    vm.loadEvents = loadEvents;
+    vm.onTimeSelected = onTimeSelected;
+    vm.onEventSelected = onEventSelected;
     vm.changeLocale( vm.selectedLocale );
 
-    vm.changeMode = function( mode ) {
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    function guid() {
+        function s4() {
+            return Math.floor( ( 1 + Math.random() ) * 0x10000 )
+                       .toString( 16 )
+                       .substring( 1 );
+        }
+
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+    }
+
+    function changeMode( mode ) {
         vm.mode = mode;
-    };
+    }
 
-    vm.today = function() {
+    function today() {
         vm.currentDate = new Date();
-    };
+    }
 
-    vm.randomDate = function() {
+    function randomDate() {
         vm.currentDate = new Date( 2016, 5, 23 );
-    };
+    }
 
-    /*vm.reloadSource = function(selectedDate) {
-     vm.eventSource = allEvents.filter(function(e) {
-     return e.startTime.getDate() === selectedDate.getDate();
-     });
-     };*/
-
-    vm.isToday = function() {
+    function isToday() {
         var today = new Date();
         var currentCalendarDate = new Date( vm.currentDate );
 
         today.setHours( 0, 0, 0, 0 );
         currentCalendarDate.setHours( 0, 0, 0, 0 );
         return today.getTime() === currentCalendarDate.getTime();
-    };
+    }
 
-    vm.loadEvents = function() {
-        vm.eventSource = allEvents;
-    };
+    function loadEvents() {
+        vm.eventSources = eventSources;
+    }
 
-    vm.onEventSelected = function( event ) {
+    function onEventSelected( event ) {
         vm.event = event;
-    };
+    }
 
-    vm.onTimeSelected = function( selectedTime ) {
+    function onTimeSelected( selectedTime ) {
         $log.info( 'Selected time: ' + selectedTime );
-    };
+    }
+
+    function changeLocale( locale ) {
+        tmhDynamicLocale.set( locale ).then( function() {
+            vm.currentDate = new Date( vm.currentDate );
+        } );
+    }
 
     /**
      * Random events factory
      *
      * @returns {Array} - Random events
      */
-    function createRandomEvents() {
+    function createRandomEvents( source, numOfEvents, color ) {
         var events = [];
         var i;
         var date;
         var startDay;
         var endDay;
-        var color;
         var startTime;
         var endTime;
         var startMinute;
         var endMinute;
 
-        for ( i = 0; i < 550; i += 1 ) {
+        for ( i = 0; i < numOfEvents; i += 1 ) {
             date = new Date();
             startDay = Math.floor( Math.random() * 90 ) - 25;
             endDay = Math.floor( Math.random() * 3 ) + startDay;
-            color = colors[ Math.floor( Math.random() * ( ( colors.length - 1 ) - 0 + 1 ) ) ];
             startMinute = Math.floor( Math.random() * 24 * 60 );
             endMinute = Math.floor( Math.random() * 180 ) + startMinute;
             startTime = new Date( date.getFullYear(), date.getMonth(), date.getDate() + startDay, 0, date.getMinutes() + startMinute );
             endTime = new Date( date.getFullYear(), date.getMonth(), date.getDate() + endDay, 0, date.getMinutes() + endMinute );
 
             events.push( {
-                title: 'Event - ' + i,
-                description: 'Long story short, though, its much improved by using dedicated click handlers, setting a ngModel if desired, taking all kinds of labels',
+                id: guid(),
+                etag: guid(),
+                summary: source + ' - Event ' + i,
                 startTime: startTime,
                 endTime: endTime,
                 color: color
