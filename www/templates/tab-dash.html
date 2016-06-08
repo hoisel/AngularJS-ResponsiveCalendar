@@ -1,0 +1,68 @@
+<ion-view view-title="Dashboard">
+  <ion-content class="padding">
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.css">
+		<link rel="stylesheet" href="css/calendar.min.css"/>
+
+		<style>
+			md-select {
+				margin: 0 26px 0 26px;
+			}
+			md-select.md-small {
+				margin: 0 5px;
+			}
+		</style>
+
+   <div style="margin-top: 30px;"  ng-cloak>
+		<!--<md-toolbar>
+			<header layout="column" class="md-padding">
+				<div class="md-title">
+					AngularJS Responsive Calendar
+				</div>
+				<div class="md-subhead">A pure AngularJS responsive calendar directive</div>
+			</header>
+		</md-toolbar>-->
+		<section ng-init="vm.loadEvents()">
+			<section layout="row" class="md-padding">
+				<md-button class="md-raised md-accent"
+						   ng-class="{'md-small': $mdMedia('xs')}"
+						   ng-click="vm.today()"
+						   ng-disabled="vm.isToday()">Hoje
+				</md-button>
+				<md-button class="md-raised"
+						   ng-class="{'md-small': $mdMedia('xs')}"
+						   ng-click="vm.showPins = !vm.showPins">Eventos
+				</md-button>
+				<md-button class="md-raised"
+						   ng-class="{'md-small': $mdMedia('xs')}"
+						   ng-click="vm.showEventList = !vm.showEventList">Detalhes
+				</md-button>
+
+				<md-select ng-model="vm.selectedLocale"
+						   ng-class="{'md-small': $mdMedia('xs')}"
+						   ng-change="vm.changeLocale(vm.selectedLocale)"
+						   placeholder="Select a locale">
+					<md-option ng-value="opt.key" ng-repeat="opt in vm.availableLocales">
+						{{opt.name}}
+					</md-option>
+				</md-select>
+			</section>
+
+			<calendar ng-model="vm.currentDate"
+					  event-sources="vm.eventSources"
+					  show-event-list="vm.showEventList"
+					  show-event-pins="vm.showPins"
+					  query-mode="vm.queryModel"
+					  view-refreshed="vm.reloadSource(selectedDate, range)"
+					  event-selected="vm.onEventSelected(event)"
+					  time-selected="vm.onTimeSelected(selectedTime)"></calendar>
+		</section>
+
+		<!-- Angular Material requires Angular.js Libraries -->
+		<!--<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-aria.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-messages.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc4/angular-material.min.js"></script>-->
+	</div>
+  </ion-content>
+</ion-view>
